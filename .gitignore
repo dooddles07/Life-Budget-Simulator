@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# build logs and local dev scripts
+*.log
+run-android.bat
