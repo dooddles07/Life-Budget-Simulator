@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { ChevronLeft, Lock } from "lucide-react-native";
-import { useEffect } from "react";
+import { createElement, useEffect } from "react";
 import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -158,7 +158,7 @@ function BadgeTile({ achievement, index }: { achievement: AchievementWithProgres
             }}
           >
             {achievement.unlocked ? (
-              <Icon size={iconSize.md} strokeWidth={ICON_STROKE} color={tone} />
+              createElement(Icon, { size: iconSize.md, strokeWidth: ICON_STROKE, color: tone })
             ) : (
               <Lock size={iconSize.md} strokeWidth={ICON_STROKE} color={tone} />
             )}

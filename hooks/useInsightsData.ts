@@ -31,14 +31,15 @@ export function useInsightsData(): AsyncState<InsightsData> {
       listTransactions(session.user.id, { sinceISO: monthsAgoISO(6) }),
       listBudgets(session.user.id),
     ]);
-    return { transactions, budgets };
+    // Captured at fetch time, not render time -- the weekly window should
+    // reflect when the data was pulled, not whenever this memo happens to re-run.
+    return { transactions, budgets, weekStart: Date.now() - SEVEN_DAYS_MS };
   }, [session?.user.id]);
 
   const data = useMemo<InsightsData | null>(() => {
     if (!raw.data) return null;
-    const { transactions, budgets } = raw.data;
+    const { transactions, budgets, weekStart } = raw.data;
     const monthStart = new Date(startOfMonthISO()).getTime();
-    const weekStart = Date.now() - SEVEN_DAYS_MS;
 
     return {
       budgetsSpend: budgetsWithSpend(

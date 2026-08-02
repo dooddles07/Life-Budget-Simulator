@@ -17,18 +17,18 @@ export function useAsync<T>(fn: () => Promise<T>, deps: DependencyList): AsyncSt
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    fn()
-      .then((result) => {
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await fn();
         if (!cancelled) setData(result);
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Something went wrong");
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };

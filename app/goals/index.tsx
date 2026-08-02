@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { CalendarClock, ChevronLeft, Plus } from "lucide-react-native";
+import { createElement } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -93,7 +94,7 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
             backgroundColor: `${accent}1F`,
           }}
         >
-          <Icon size={iconSize.md} strokeWidth={ICON_STROKE} color={accent} />
+          {createElement(Icon, { size: iconSize.md, strokeWidth: ICON_STROKE, color: accent })}
         </View>
 
         <View style={{ flex: 1 }}>
