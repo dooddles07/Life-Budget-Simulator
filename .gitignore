@@ -40,6 +40,9 @@ yarn-error.*
 *.log
 run-android.bat
 
+# Playwright MCP snapshots
+.playwright-mcp/
+
 # typescript
 *.tsbuildinfo
 
