@@ -15,6 +15,7 @@ import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { GOALS, PERSONAS } from "@/data/seed";
 import { formatMoney } from "@/lib/format";
 import { useAuth } from "@/lib/auth-context";
+import { seedDefaultBudgets } from "@/lib/data/budgets";
 import { addGoal } from "@/lib/data/goals";
 import { upsertProfile } from "@/lib/data/profiles";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -55,6 +56,7 @@ export default function OnboardingScreen() {
     try {
       const selectedGoal = GOALS.find((g) => g.id === goal);
       await upsertProfile({ id: session.user.id, persona_id: persona, monthly_income: income });
+      await seedDefaultBudgets(session.user.id, income);
       if (selectedGoal) {
         await addGoal({
           user_id: session.user.id,

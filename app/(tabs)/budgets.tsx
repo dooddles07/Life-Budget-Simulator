@@ -11,31 +11,40 @@ import { Screen } from "@/components/ui/Screen";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SegmentedBar } from "@/components/ui/SegmentedBar";
 import { Text } from "@/components/ui/Text";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { BUDGETS, CATEGORY_MAP, type Budget } from "@/data/seed";
+import { CATEGORY_MAP } from "@/data/seed";
 import { formatMoney } from "@/lib/format";
+import { useBudgetsWithSpend } from "@/hooks/useBudgets";
+import type { Budget } from "@/lib/data/budgets";
+import { useGoals } from "@/hooks/useGoals";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
+
+type BudgetWithSpend = Budget & { spent: number };
 
 export default function BudgetsScreen() {
   const theme = useTheme();
   const currency = useCurrency();
   const router = useRouter();
   const { enter, enterList } = useMotion();
+  const { data: budgets, loading, error, refetch } = useBudgetsWithSpend();
+  const { data: goals } = useGoals();
 
-  const { totalLimit, totalSpent, overCount } = useMemo(
-    () => ({
-      totalLimit: BUDGETS.reduce((s, b) => s + b.limit, 0),
-      totalSpent: BUDGETS.reduce((s, b) => s + b.spent, 0),
-      overCount: BUDGETS.filter((b) => b.spent > b.limit).length,
-    }),
-    []
-  );
+  const { totalLimit, totalSpent, overCount, sorted } = useMemo(() => {
+    const list = budgets ?? [];
+    return {
+      totalLimit: list.reduce((s, b) => s + b.monthly_limit, 0),
+      totalSpent: list.reduce((s, b) => s + b.spent, 0),
+      overCount: list.filter((b) => b.spent > b.monthly_limit).length,
+      sorted: [...list].sort((a, b) => b.spent / b.monthly_limit - a.spent / a.monthly_limit),
+    };
+  }, [budgets]);
 
-  const sorted = useMemo(
-    () => [...BUDGETS].sort((a, b) => b.spent / b.limit - a.spent / a.limit),
-    []
-  );
+  if (loading) return <LoadingState />;
+  if (error || !budgets) {
+    return <ErrorState message={error ?? "Couldn't load your budgets."} onRetry={refetch} />;
+  }
 
   return (
     <Screen hasTabBar>
@@ -61,7 +70,7 @@ export default function BudgetsScreen() {
           </View>
           <View style={{ marginTop: space.lg }}>
             <SegmentedBar
-              progress={totalSpent / totalLimit}
+              progress={totalLimit > 0 ? totalSpent / totalLimit : 0}
               segments={14}
               color={theme.primaryBright}
               delay={200}
@@ -112,7 +121,7 @@ export default function BudgetsScreen() {
             <View style={{ flex: 1, gap: 2 }}>
               <Text variant="labelSb">Savings goals</Text>
               <Text variant="caption" tone="muted">
-                4 active · next milestone in 3 months
+                {goals?.length ?? 0} active
               </Text>
             </View>
           </Card>
@@ -126,14 +135,14 @@ export default function BudgetsScreen() {
  * Ported from 21st.dev "Spending Limit Card" (@lavikatiyar/card-8): headline
  * amount with a muted "of limit" suffix over a segmented progress bar.
  */
-function EnvelopeCard({ budget, delay }: { budget: Budget; delay: number }) {
+function EnvelopeCard({ budget, delay }: { budget: BudgetWithSpend; delay: number }) {
   const theme = useTheme();
   const currency = useCurrency();
 
   const category = CATEGORY_MAP[budget.category];
   const Icon = category.icon;
   const swatch = theme.categories[category.swatch];
-  const ratio = budget.spent / budget.limit;
+  const ratio = budget.monthly_limit > 0 ? budget.spent / budget.monthly_limit : 0;
 
   const over = ratio > 1;
   const spent = !over && ratio >= 1;
@@ -144,12 +153,12 @@ function EnvelopeCard({ budget, delay }: { budget: Budget; delay: number }) {
   const StatusIcon = over || spent ? TriangleAlert : near ? AlertTriangle : CheckCircle2;
   const statusColor = over ? theme.danger : spent || near ? theme.warning : theme.success;
   const statusText = over
-    ? `${formatMoney(budget.spent - budget.limit, currency)} over`
+    ? `${formatMoney(budget.spent - budget.monthly_limit, currency)} over`
     : spent
       ? "Limit reached"
       : near
         ? "Close to limit"
-        : `${formatMoney(budget.limit - budget.spent, currency)} left`;
+        : `${formatMoney(budget.monthly_limit - budget.spent, currency)} left`;
 
   return (
     <Card padded="lg" accent={over ? `${theme.danger}66` : undefined}>
@@ -189,7 +198,7 @@ function EnvelopeCard({ budget, delay }: { budget: Budget; delay: number }) {
             {formatMoney(budget.spent, currency)}
           </Text>
           <Text variant="caption" tone="muted" tabular>
-            of {formatMoney(budget.limit, currency)}
+            of {formatMoney(budget.monthly_limit, currency)}
           </Text>
         </View>
       </View>

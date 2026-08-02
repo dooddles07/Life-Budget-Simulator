@@ -19,6 +19,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { DeviceFrame } from "@/components/device-frame/DeviceFrame";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { PrefsProvider, useTheme, useThemeName } from "@/hooks/useTheme";
 
@@ -43,7 +44,9 @@ export default function RootLayout() {
         <AuthProvider>
           <PrefsProvider>
             <DeviceFrame>
-              <Gate fontsReady={fontsReady} />
+              <ErrorBoundary>
+                <Gate fontsReady={fontsReady} />
+              </ErrorBoundary>
             </DeviceFrame>
           </PrefsProvider>
         </AuthProvider>

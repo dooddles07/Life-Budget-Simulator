@@ -3,6 +3,7 @@ import {
   Accessibility,
   ChevronRight,
   Coins,
+  LogOut,
   Moon,
   Sun,
   SunMoon,
@@ -14,6 +15,7 @@ import {
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { Pressable } from "@/components/ui/Pressable";
@@ -24,7 +26,9 @@ import { Switch } from "@/components/ui/Switch";
 import { Text } from "@/components/ui/Text";
 import { CURRENCIES, levelFromXp, type CurrencyCode } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { ACHIEVEMENTS, GOALS, PROFILE } from "@/data/seed";
+import { useAchievements } from "@/hooks/useAchievements";
+import { useGoals } from "@/hooks/useGoals";
+import { useAuth } from "@/lib/auth-context";
 import { useMotion } from "@/hooks/useMotion";
 import { useSettings, useTheme } from "@/hooks/useTheme";
 
@@ -32,6 +36,9 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { enter, enterList } = useMotion();
+  const { profile, signOut } = useAuth();
+  const { data: achievements } = useAchievements();
+  const { data: goals } = useGoals();
   const {
     themeOverride,
     setThemeOverride,
@@ -43,8 +50,11 @@ export default function ProfileScreen() {
     setHaptics,
   } = useSettings();
 
-  const level = levelFromXp(PROFILE.xp);
-  const unlocked = ACHIEVEMENTS.filter((a) => a.unlocked).length;
+  if (!profile) return null;
+
+  const level = levelFromXp(profile.xp);
+  const unlockedCount = achievements?.filter((a) => a.unlocked).length ?? 0;
+  const totalCount = achievements?.length ?? 0;
 
   return (
     <Screen hasTabBar>
@@ -68,14 +78,14 @@ export default function ProfileScreen() {
               }}
             >
               <Text variant="h2" tone="primary">
-                {PROFILE.name.charAt(0)}
+                {profile.name.charAt(0) || "?"}
               </Text>
             </View>
 
             <View style={{ flex: 1, gap: 2 }}>
-              <Text variant="h3">{PROFILE.name}</Text>
+              <Text variant="h3">{profile.name || "You"}</Text>
               <Text variant="caption" tone="muted">
-                {PROFILE.handle}
+                {profile.handle}
               </Text>
               <Text variant="captionSb" tone="accent" style={{ marginTop: space.xs }}>
                 Lv {level.level} · {level.title}
@@ -92,7 +102,7 @@ export default function ProfileScreen() {
               accessibilityLabel="Experience to next level"
             />
             <Text variant="caption" tone="muted" tabular>
-              {(level.ceil - PROFILE.xp).toLocaleString()} XP to Lv {level.level + 1}
+              {(level.ceil - profile.xp).toLocaleString()} XP to Lv {level.level + 1}
             </Text>
           </View>
         </Card>
@@ -104,7 +114,7 @@ export default function ProfileScreen() {
           <NavTile
             icon={Trophy}
             label="Achievements"
-            value={`${unlocked} of ${ACHIEVEMENTS.length}`}
+            value={`${unlockedCount} of ${totalCount}`}
             tone={theme.warning}
             onPress={() => router.push("/achievements")}
           />
@@ -113,7 +123,7 @@ export default function ProfileScreen() {
           <NavTile
             icon={Target}
             label="Goals"
-            value={`${GOALS.length} active`}
+            value={`${goals?.length ?? 0} active`}
             tone={theme.accent}
             onPress={() => router.push("/goals")}
           />
@@ -188,11 +198,12 @@ export default function ProfileScreen() {
         </Card>
       </Animated.View>
 
-      <Animated.View entering={enterList(5)} style={{ marginTop: space.xl }}>
+      <Animated.View entering={enterList(5)} style={{ marginTop: space.xl, gap: space.lg }}>
+        <Button label="Sign out" variant="surface" icon={LogOut} full onPress={() => void signOut()} />
         <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, justifyContent: "center" }}>
           <Coins size={iconSize.sm} strokeWidth={ICON_STROKE} color={theme.fgFaint} />
           <Text variant="caption" tone="faint">
-            Life Budget Simulator · demo data
+            Life Budget Simulator
           </Text>
         </View>
       </Animated.View>

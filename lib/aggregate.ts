@@ -6,6 +6,20 @@ import type { Achievement, UserAchievement } from "./data/achievements";
 import type { Budget } from "./data/budgets";
 import type { Transaction } from "./data/transactions";
 
+export function startOfMonthISO(): string {
+  const d = new Date();
+  d.setDate(1);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+export function monthsAgoISO(months: number): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() - months, 1);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
 export function computeSpendByCategory(transactions: Transaction[]): Record<CategoryId, number> {
   const totals = {} as Record<CategoryId, number>;
   for (const tx of transactions) {
@@ -70,6 +84,42 @@ export function computeNetWorthHistory(
     points.push({ label: monthEnd.toLocaleString("en-US", { month: "short" }), value: running });
   }
   return points;
+}
+
+/** Requires the FULL transaction history, not a time-limited slice -- net
+ *  worth is a running total since account creation, not a windowed sum. */
+export function computeCurrentNetWorth(transactions: Transaction[], startingNetWorth: number): number {
+  return startingNetWorth + transactions.reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function computeMonthDelta(transactions: Transaction[]): number {
+  const monthStart = new Date(startOfMonthISO()).getTime();
+  return transactions
+    .filter((t) => new Date(t.occurred_at).getTime() >= monthStart)
+    .reduce((sum, t) => sum + t.amount, 0);
+}
+
+export type BudgetInsight = {
+  id: string;
+  tone: "warn" | "bad";
+  category: CategoryId;
+  amount: number;
+};
+
+// Real, derived signals only -- no per-merchant narrative ("coffee is your
+// quiet leak") since that needs pattern detection this app doesn't do.
+// Screens compose these into display copy with CATEGORY_MAP for the label.
+export function computeBudgetInsights(budgets: (Budget & { spent: number })[]): BudgetInsight[] {
+  const insights: BudgetInsight[] = [];
+  for (const b of budgets) {
+    if (b.monthly_limit <= 0) continue;
+    if (b.spent > b.monthly_limit) {
+      insights.push({ id: `over-${b.category}`, tone: "bad", category: b.category, amount: b.spent - b.monthly_limit });
+    } else if (b.spent >= b.monthly_limit * 0.8) {
+      insights.push({ id: `near-${b.category}`, tone: "warn", category: b.category, amount: b.monthly_limit - b.spent });
+    }
+  }
+  return insights.sort((a, b) => (a.tone === b.tone ? 0 : a.tone === "bad" ? -1 : 1)).slice(0, 3);
 }
 
 export function mergeAchievements(

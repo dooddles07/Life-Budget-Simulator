@@ -9,8 +9,11 @@ import { TransactionRow } from "@/components/money/TransactionRow";
 import { IconButton } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Text } from "@/components/ui/Text";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { ICON_STROKE, iconSize, space } from "@/constants/theme";
-import { CATEGORIES, TRANSACTIONS, type CategoryId, type Transaction } from "@/data/seed";
+import { CATEGORIES, type CategoryId } from "@/data/seed";
+import { useTransactions } from "@/hooks/useTransactions";
+import type { Transaction } from "@/lib/data/transactions";
 import { formatMoney, relativeDay } from "@/lib/format";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
@@ -21,23 +24,23 @@ export default function TransactionsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { enter } = useMotion();
+  const { data: transactions, loading, error, refetch } = useTransactions();
 
   const [filter, setFilter] = useState<CategoryId | null>(null);
 
   const counts = useMemo(() => {
     const map = {} as Record<CategoryId, number>;
-    for (const t of TRANSACTIONS) map[t.category] = (map[t.category] ?? 0) + 1;
+    for (const t of transactions ?? []) map[t.category] = (map[t.category] ?? 0) + 1;
     return map;
-  }, []);
+  }, [transactions]);
 
   const sections = useMemo(() => {
-    const filtered = filter
-      ? TRANSACTIONS.filter((t) => t.category === filter)
-      : TRANSACTIONS;
+    const all = transactions ?? [];
+    const filtered = filter ? all.filter((t) => t.category === filter) : all;
 
     const groups = new Map<string, Transaction[]>();
     for (const t of filtered) {
-      const key = relativeDay(t.date);
+      const key = relativeDay(t.occurred_at);
       const list = groups.get(key);
       if (list) list.push(t);
       else groups.set(key, [t]);
@@ -48,7 +51,12 @@ export default function TransactionsScreen() {
       data,
       total: data.reduce((s, t) => s + t.amount, 0),
     }));
-  }, [filter]);
+  }, [filter, transactions]);
+
+  if (loading) return <LoadingState />;
+  if (error || !transactions) {
+    return <ErrorState message={error ?? "Couldn't load your transactions."} onRetry={refetch} />;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -91,7 +99,7 @@ export default function TransactionsScreen() {
               <Chip
                 label="All"
                 active={filter === null}
-                count={TRANSACTIONS.length}
+                count={transactions.length}
                 onPress={() => setFilter(null)}
               />
               {CATEGORIES.filter((c) => counts[c.id]).map((cat) => (
