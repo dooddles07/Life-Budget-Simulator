@@ -1,0 +1,23 @@
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+java.io.IOException: Unable to establish loopback connection
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+Error: C:\Users\Dooddles07\Desktop\Life Budget Simulator\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64 exited with non-zero code: 1
+Error: C:\Users\Dooddles07\Desktop\Life Budget Simulator\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64 exited with non-zero code: 1
+    at ChildProcess.completionListener (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\@expo\spawn-async\build\spawnAsync.js:113:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at cp.emit (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\cross-spawn\lib\enoent.js:34:29)
+    at ChildProcess._handle.onexit (node:internal/child_process:294:12)
+    ...
+    at spawnAsync (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\@expo\spawn-async\build\spawnAsync.js:9:23)
+    at spawnGradleAsync (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\expo\node_modules\@expo\cli\build\src\start\platforms\android\gradle.js:107:48)
+    at assembleAsync (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\expo\node_modules\@expo\cli\build\src\start\platforms\android\gradle.js:82:18)
+    at runAndroidAsync (C:\Users\Dooddles07\Desktop\Life Budget Simulator\node_modules\expo\node_modules\@expo\cli\build\src\run\android\runAndroidAsync.js:85:41)
