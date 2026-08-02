@@ -110,14 +110,16 @@ create policy "achievements: public read" on achievements
 create policy "user_achievements: owner full access" on user_achievements
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- Seed the static achievement catalog (mirrors data/seed.ts ACHIEVEMENTS ids/titles).
+-- Seed the static achievement catalog -- exact ids/titles/xp mirrored from
+-- data/seed.ts ACHIEVEMENTS. icon is a kebab-case key the client maps back
+-- to the matching lucide-react-native component (see lib/icons.ts).
 insert into achievements (id, title, detail, icon, xp) values
-  ('first-entry', 'First entry', 'Log your first transaction', 'sparkles', 10),
-  ('week-streak', '7-day streak', 'Open the app 7 days in a row', 'flame', 25),
-  ('budget-keeper', 'Budget keeper', 'Stay under budget in every category for a month', 'shield-check', 50),
-  ('goal-starter', 'Goal starter', 'Create your first savings goal', 'target', 10),
-  ('goal-halfway', 'Halfway there', 'Reach 50% of a savings goal', 'trending-up', 20),
-  ('goal-crusher', 'Goal crusher', 'Fully fund a savings goal', 'trophy', 50),
-  ('simulator-explorer', 'Simulator explorer', 'Run 5 what-if scenarios', 'sliders', 15),
-  ('coffee-cutter', 'Coffee cutter', 'Reduce simulated coffee spend to zero', 'coffee', 15),
-  ('net-worth-climber', 'Net worth climber', 'Grow net worth 3 months running', 'line-chart', 30);
+  ('a1', 'First Entry', 'Log your first expense', 'wallet', 25),
+  ('a2', 'Week Streak', 'Log 7 days in a row', 'zap', 60),
+  ('a3', 'Under Budget', 'Finish a month under every envelope', 'piggy-bank', 120),
+  ('a4', 'Goal Getter', 'Hit your first savings goal', 'heart-pulse', 150),
+  ('a5', 'Coffee Quitter', 'Skip 10 coffee runs', 'utensils', 90),
+  ('a6', 'Simulator', 'Run 5 what-if scenarios', 'graduation-cap', 80),
+  ('a7', 'Iron Discipline', '30 day logging streak', 'dumbbell', 250),
+  ('a8', 'Six Figures', 'Reach 100k net worth', 'credit-card', 200),
+  ('a9', 'Debt Free', 'Clear every liability', 'home', 400);

@@ -11,6 +11,8 @@ import { Text } from "@/components/ui/Text";
 import { CURRENCIES } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { CATEGORIES, type CategoryId } from "@/data/seed";
+import { useAuth } from "@/lib/auth-context";
+import { addTransaction } from "@/lib/data/transactions";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
@@ -23,11 +25,14 @@ export default function AddScreen() {
   const router = useRouter();
   const haptics = useHaptics();
   const { enter, enterList } = useMotion();
+  const { session } = useAuth();
 
   const [amount, setAmount] = useState("0");
   const [category, setCategory] = useState<CategoryId>("food");
   const [isIncome, setIsIncome] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const numeric = Number(amount) || 0;
   const canSave = numeric > 0;
@@ -45,11 +50,29 @@ export default function AddScreen() {
     });
   };
 
-  const save = () => {
-    haptics.success();
-    setSaved(true);
-    // Demo build: the entry is acknowledged, then the sheet closes. No store to write to.
-    setTimeout(() => router.back(), 850);
+  const save = async () => {
+    if (!session || !canSave || saving) return;
+    setError(null);
+    setSaving(true);
+    try {
+      // The keypad UI has no title/merchant field by design (fast entry) --
+      // the category label doubles as the transaction title.
+      const title = CATEGORIES.find((c) => c.id === category)?.label ?? category;
+      await addTransaction({
+        user_id: session.user.id,
+        title,
+        amount: isIncome ? numeric : -numeric,
+        category,
+      });
+      haptics.success();
+      setSaved(true);
+      setTimeout(() => router.back(), 850);
+    } catch (e) {
+      haptics.error();
+      setError(e instanceof Error ? e.message : "Couldn't save -- try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -227,14 +250,22 @@ export default function AddScreen() {
             </View>
           </Animated.View>
         ) : (
-          <Button
-            full
-            size="lg"
-            variant={isIncome ? "accent" : "primary"}
-            label={canSave ? "Log it" : "Enter an amount"}
-            disabled={!canSave}
-            onPress={save}
-          />
+          <>
+            {error ? (
+              <Text variant="label" tone="danger" style={{ marginBottom: space.sm }}>
+                {error}
+              </Text>
+            ) : null}
+            <Button
+              full
+              size="lg"
+              variant={isIncome ? "accent" : "primary"}
+              label={canSave ? "Log it" : "Enter an amount"}
+              disabled={!canSave}
+              loading={saving}
+              onPress={() => void save()}
+            />
+          </>
         )}
       </View>
     </Screen>
