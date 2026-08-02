@@ -30,8 +30,15 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# env files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# logs
+*.log
+run-android.bat
 
 # typescript
 *.tsbuildinfo
