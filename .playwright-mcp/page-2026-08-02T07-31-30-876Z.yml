@@ -1,0 +1,26 @@
+- generic [ref=e58]:
+  - button "Skip setup" [ref=e64] [cursor=pointer]:
+    - generic [ref=e65]: Skip
+  - generic [ref=e67]:
+    - generic [ref=e68]:
+      - generic [ref=e69]: Step 1 of 3
+      - generic [ref=e74]: Who are you right now?
+      - generic [ref=e75]: Sets a starting budget you can change later.
+    - generic [ref=e76]:
+      - radio "Student. Allowance, dorm life, tight margins" [ref=e77] [cursor=pointer]:
+        - generic [ref=e83]:
+          - generic [ref=e84]: Student
+          - generic [ref=e85]: Allowance, dorm life, tight margins
+      - radio "Fresh Grad. First salary, first rent, first mistakes" [ref=e86] [cursor=pointer]:
+        - generic [ref=e92]:
+          - generic [ref=e93]: Fresh Grad
+          - generic [ref=e94]: First salary, first rent, first mistakes
+      - radio "Side Hustler. Day job plus freelance income" [checked] [ref=e95] [cursor=pointer]:
+        - generic [ref=e100]:
+          - generic [ref=e101]: Side Hustler
+          - generic [ref=e102]: Day job plus freelance income
+      - radio "Provider. Family budget, long horizon" [ref=e106] [cursor=pointer]:
+        - generic [ref=e112]:
+          - generic [ref=e113]: Provider
+          - generic [ref=e114]: Family budget, long horizon
+  - button "Continue" [ref=e117] [cursor=pointer]

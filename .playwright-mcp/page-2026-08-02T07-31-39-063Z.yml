@@ -1,0 +1,20 @@
+- generic [ref=e58]:
+  - button "Skip setup" [ref=e64] [cursor=pointer]:
+    - generic [ref=e65]: Skip
+  - generic [ref=e121]:
+    - generic [ref=e122]:
+      - generic [ref=e123]: Step 2 of 3
+      - generic [ref=e128]: What lands each month?
+      - generic [ref=e129]: Everything after tax, including side income.
+    - generic [ref=e130]:
+      - generic [ref=e131]:
+        - generic [ref=e132]: Monthly income
+        - generic [ref=e133]: ₱70,500.00
+      - generic [ref=e134]:
+        - generic [ref=e135]:
+          - generic [ref=e136]: Adjust
+          - generic [ref=e137]: ₱70.5k
+        - slider "Adjust" [ref=e139]
+  - generic [ref=e115]:
+    - button "Back" [ref=e142] [cursor=pointer]
+    - button "Continue" [active] [ref=e117] [cursor=pointer]
