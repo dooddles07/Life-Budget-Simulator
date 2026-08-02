@@ -43,3 +43,6 @@ yarn-error.*
 # build logs and local dev scripts
 *.log
 run-android.bat
+
+# Playwright MCP snapshots
+.playwright-mcp/
