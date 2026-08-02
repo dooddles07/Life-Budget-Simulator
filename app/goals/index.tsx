@@ -9,8 +9,11 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { GOALS, type Goal } from "@/data/seed";
+import { useGoals } from "@/hooks/useGoals";
+import type { Goal } from "@/lib/data/goals";
+import { iconForKey } from "@/lib/icons";
 import { formatMoney } from "@/lib/format";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
@@ -19,9 +22,15 @@ export default function GoalsScreen() {
   const router = useRouter();
   const currency = useCurrency();
   const { enter, enterList } = useMotion();
+  const { data: goals, loading, error, refetch } = useGoals();
 
-  const totalSaved = GOALS.reduce((s, g) => s + g.saved, 0);
-  const totalTarget = GOALS.reduce((s, g) => s + g.target, 0);
+  if (loading) return <LoadingState />;
+  if (error || !goals) {
+    return <ErrorState message={error ?? "Couldn't load your goals."} onRetry={refetch} />;
+  }
+
+  const totalSaved = goals.reduce((s, g) => s + g.saved, 0);
+  const totalTarget = goals.reduce((s, g) => s + g.target, 0);
 
   return (
     <Screen>
@@ -40,14 +49,14 @@ export default function GoalsScreen() {
       </Animated.View>
 
       <View style={{ gap: space.md }}>
-        {GOALS.map((goal, i) => (
+        {goals.map((goal, i) => (
           <Animated.View key={goal.id} entering={enterList(i)}>
             <GoalCard goal={goal} delay={i * 60} />
           </Animated.View>
         ))}
       </View>
 
-      <Animated.View entering={enterList(GOALS.length)} style={{ marginTop: space.xl }}>
+      <Animated.View entering={enterList(goals.length)} style={{ marginTop: space.xl }}>
         <Button full size="lg" variant="surface" icon={Plus} label="New goal" />
       </Animated.View>
     </Screen>
@@ -58,15 +67,18 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
   const theme = useTheme();
   const currency = useCurrency();
 
-  const Icon = goal.icon;
-  const accent = theme.categories[goal.accentIndex];
-  const progress = goal.saved / goal.target;
+  const Icon = iconForKey(goal.icon);
+  const accent = theme.categories[goal.accent_index];
+  const progress = goal.target > 0 ? goal.saved / goal.target : 0;
   const remaining = goal.target - goal.saved;
-  const monthsLeft = Math.max(1, Math.ceil(remaining / goal.monthly));
+  const monthsLeft = goal.monthly > 0 ? Math.max(1, Math.ceil(remaining / goal.monthly)) : null;
 
-  const eta = new Date();
-  eta.setMonth(eta.getMonth() + monthsLeft);
-  const etaLabel = eta.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  let etaLabel = "no monthly contribution set";
+  if (monthsLeft !== null) {
+    const eta = new Date();
+    eta.setMonth(eta.getMonth() + monthsLeft);
+    etaLabel = eta.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
 
   return (
     <Card padded="lg">
@@ -89,7 +101,7 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
           <View style={{ flexDirection: "row", alignItems: "center", gap: space.xs, marginTop: 2 }}>
             <CalendarClock size={14} strokeWidth={ICON_STROKE} color={theme.fgMuted} />
             <Text variant="caption" tone="muted" tabular>
-              {monthsLeft} mo · {etaLabel}
+              {monthsLeft !== null ? `${monthsLeft} mo · ${etaLabel}` : etaLabel}
             </Text>
           </View>
         </View>

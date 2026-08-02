@@ -14,9 +14,12 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { levelFromXp } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { ACHIEVEMENTS, PROFILE, type Achievement } from "@/data/seed";
+import { useAchievements, type AchievementWithProgress } from "@/hooks/useAchievements";
+import { iconForKey } from "@/lib/icons";
+import { useAuth } from "@/lib/auth-context";
 import { useMotion } from "@/hooks/useMotion";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -24,10 +27,17 @@ export default function AchievementsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { enter, enterList } = useMotion();
+  const { profile } = useAuth();
+  const { data: achievements, loading, error, refetch } = useAchievements();
 
-  const level = levelFromXp(PROFILE.xp);
-  const unlocked = ACHIEVEMENTS.filter((a) => a.unlocked);
-  const locked = ACHIEVEMENTS.filter((a) => !a.unlocked);
+  if (loading) return <LoadingState />;
+  if (error || !achievements || !profile) {
+    return <ErrorState message={error ?? "Couldn't load your achievements."} onRetry={refetch} />;
+  }
+
+  const level = levelFromXp(profile.xp);
+  const unlocked = achievements.filter((a) => a.unlocked);
+  const locked = achievements.filter((a) => !a.unlocked);
 
   return (
     <Screen>
@@ -39,7 +49,7 @@ export default function AchievementsScreen() {
         <View style={{ flex: 1 }}>
           <Text variant="h2">Achievements</Text>
           <Text variant="caption" tone="muted" tabular>
-            {unlocked.length} of {ACHIEVEMENTS.length} unlocked
+            {unlocked.length} of {achievements.length} unlocked
           </Text>
         </View>
       </Animated.View>
@@ -61,7 +71,7 @@ export default function AchievementsScreen() {
               </Text>
             </View>
             <Text variant="labelSb" tone="muted" tabular>
-              {PROFILE.xp.toLocaleString()} XP
+              {profile.xp.toLocaleString()} XP
             </Text>
           </View>
           <ProgressBar
@@ -96,11 +106,11 @@ export default function AchievementsScreen() {
   );
 }
 
-function BadgeTile({ achievement, index }: { achievement: Achievement; index: number }) {
+function BadgeTile({ achievement, index }: { achievement: AchievementWithProgress; index: number }) {
   const theme = useTheme();
   const { toSpring, reduce, enterList } = useMotion();
 
-  const Icon = achievement.icon;
+  const Icon = iconForKey(achievement.icon);
   const tone = achievement.unlocked ? theme.warning : theme.fgFaint;
 
   const burst = useSharedValue(1);

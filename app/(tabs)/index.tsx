@@ -7,7 +7,6 @@ import {
   TrendingUp,
   Wand2,
 } from "lucide-react-native";
-import { useMemo } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -21,10 +20,12 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Screen } from "@/components/ui/Screen";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Text } from "@/components/ui/Text";
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { levelFromXp } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { BUDGETS, PROFILE, TRANSACTIONS } from "@/data/seed";
 import { formatMoney, greeting } from "@/lib/format";
+import { useAuth } from "@/lib/auth-context";
+import { useHomeData } from "@/hooks/useHomeData";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
 
@@ -33,25 +34,17 @@ export default function HomeScreen() {
   const currency = useCurrency();
   const router = useRouter();
   const { enter, enterList } = useMotion();
+  const { profile } = useAuth();
+  const { data, loading, error, refetch } = useHomeData();
 
-  const level = levelFromXp(PROFILE.xp);
+  if (loading) return <LoadingState />;
+  if (error || !data || !profile) {
+    return <ErrorState message={error ?? "Couldn't load your data."} onRetry={refetch} />;
+  }
 
-  const { spent, limit, safeToSpend, daysLeft } = useMemo(() => {
-    const totalLimit = BUDGETS.reduce((s, b) => s + b.limit, 0);
-    const totalSpent = BUDGETS.reduce((s, b) => s + b.spent, 0);
-    const now = new Date();
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const remaining = Math.max(1, end - now.getDate());
-    return {
-      spent: totalSpent,
-      limit: totalLimit,
-      safeToSpend: Math.max(0, Math.round((totalLimit - totalSpent) / remaining)),
-      daysLeft: remaining,
-    };
-  }, []);
-
-  const burn = Math.min(1, spent / limit);
-  const recent = TRANSACTIONS.slice(0, 4);
+  const level = levelFromXp(profile.xp);
+  const { spent, limit, safeToSpend, daysLeft, netWorth, monthDelta, recent } = data;
+  const burn = limit > 0 ? Math.min(1, spent / limit) : 0;
 
   return (
     <Screen hasTabBar>
@@ -69,12 +62,12 @@ export default function HomeScreen() {
               {greeting()}
             </Text>
             <Text variant="h2" numberOfLines={1}>
-              {PROFILE.name}
+              {profile.name}
             </Text>
           </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm }}>
-            <StreakBadge days={PROFILE.streakDays} />
+            <StreakBadge days={profile.streak_days} />
             <IconButton
               icon={Bell}
               label="Notifications"
@@ -92,7 +85,7 @@ export default function HomeScreen() {
           noMinSize
           onPress={() => router.push("/achievements")}
           accessibilityRole="button"
-          accessibilityLabel={`Level ${level.level}, ${level.title}. ${PROFILE.xp} of ${level.ceil} XP. View achievements.`}
+          accessibilityLabel={`Level ${level.level}, ${level.title}. ${profile.xp} of ${level.ceil} XP. View achievements.`}
           style={{ marginBottom: space.lg }}
         >
           <Card padded="lg">
@@ -124,7 +117,7 @@ export default function HomeScreen() {
                     {level.title}
                   </Text>
                   <Text variant="caption" tone="muted" tabular>
-                    {PROFILE.xp.toLocaleString()} / {level.ceil.toLocaleString()} XP
+                    {profile.xp.toLocaleString()} / {level.ceil.toLocaleString()} XP
                   </Text>
                 </View>
               </View>
@@ -158,7 +151,7 @@ export default function HomeScreen() {
             <Text variant="caption" tone="muted">
               Net worth
             </Text>
-            <NumberTicker value={PROFILE.netWorth} variant="display" />
+            <NumberTicker value={netWorth} variant="display" />
 
             <View
               style={{
@@ -168,9 +161,13 @@ export default function HomeScreen() {
                 marginTop: space.sm,
               }}
             >
-              <TrendingUp size={iconSize.sm} strokeWidth={ICON_STROKE} color={theme.success} />
-              <Text variant="captionSb" tone="success" tabular>
-                +{formatMoney(15500, currency, { compact: true })}
+              <TrendingUp
+                size={iconSize.sm}
+                strokeWidth={ICON_STROKE}
+                color={monthDelta >= 0 ? theme.success : theme.danger}
+              />
+              <Text variant="captionSb" tone={monthDelta >= 0 ? "success" : "danger"} tabular>
+                {formatMoney(monthDelta, currency, { compact: true, signed: true })}
               </Text>
               <Text variant="caption" tone="muted">
                 this month

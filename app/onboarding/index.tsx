@@ -14,11 +14,24 @@ import { Text } from "@/components/ui/Text";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { GOALS, PERSONAS } from "@/data/seed";
 import { formatMoney } from "@/lib/format";
+import { useAuth } from "@/lib/auth-context";
+import { seedDefaultBudgets } from "@/lib/data/budgets";
+import { addGoal } from "@/lib/data/goals";
+import { upsertProfile } from "@/lib/data/profiles";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
 
 const STEPS = 3;
+
+// The 4 template goals only exist here (onboarding's goal picker) -- maps
+// each to the icon key stored in the DB (see lib/icons.ts).
+const GOAL_ICON_KEY: Record<string, string> = {
+  g1: "piggy-bank",
+  g2: "clapperboard",
+  g3: "credit-card",
+  g4: "home",
+};
 
 export default function OnboardingScreen() {
   const theme = useTheme();
@@ -27,20 +40,47 @@ export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const haptics = useHaptics();
   const { enter } = useMotion();
+  const { session, refetchProfile } = useAuth();
 
   const [step, setStep] = useState(0);
   const [persona, setPersona] = useState(PERSONAS[2].id);
   const [income, setIncome] = useState(PERSONAS[2].income);
   const [goal, setGoal] = useState(GOALS[0].id);
+  const [finishing, setFinishing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const finish = () => {
-    haptics.success();
-    router.replace("/(tabs)");
+  const finish = async () => {
+    if (!session || finishing) return;
+    setError(null);
+    setFinishing(true);
+    try {
+      const selectedGoal = GOALS.find((g) => g.id === goal);
+      await upsertProfile({ id: session.user.id, persona_id: persona, monthly_income: income });
+      await seedDefaultBudgets(session.user.id, income);
+      if (selectedGoal) {
+        await addGoal({
+          user_id: session.user.id,
+          title: selectedGoal.title,
+          target: selectedGoal.target,
+          monthly: selectedGoal.monthly,
+          icon: GOAL_ICON_KEY[selectedGoal.id] ?? "target",
+          accent_index: selectedGoal.accentIndex,
+        });
+      }
+      await refetchProfile();
+      haptics.success();
+      router.replace("/(tabs)");
+    } catch (e) {
+      haptics.error();
+      setError(e instanceof Error ? e.message : "Couldn't save your setup -- try again.");
+    } finally {
+      setFinishing(false);
+    }
   };
 
   const next = () => {
     haptics.tap();
-    if (step === STEPS - 1) finish();
+    if (step === STEPS - 1) void finish();
     else setStep((s) => s + 1);
   };
 
@@ -83,7 +123,8 @@ export default function OnboardingScreen() {
           </View>
           <Pressable
             noMinSize
-            onPress={finish}
+            disabled={finishing}
+            onPress={() => void finish()}
             accessibilityRole="button"
             accessibilityLabel="Skip setup"
             style={{ height: 44, justifyContent: "center", paddingHorizontal: space.sm }}
@@ -93,6 +134,12 @@ export default function OnboardingScreen() {
             </Text>
           </Pressable>
         </View>
+
+        {error ? (
+          <Text variant="label" tone="danger" style={{ marginBottom: space.md }}>
+            {error}
+          </Text>
+        ) : null}
 
         <View style={{ flex: 1 }}>
           {step === 0 ? (
@@ -283,6 +330,7 @@ export default function OnboardingScreen() {
               size="lg"
               variant="surface"
               label="Back"
+              disabled={finishing}
               onPress={() => {
                 haptics.tap();
                 setStep((s) => s - 1);
@@ -296,6 +344,7 @@ export default function OnboardingScreen() {
               variant="primary"
               iconRight={step === STEPS - 1 ? Check : ArrowRight}
               label={step === STEPS - 1 ? "Start simulating" : "Continue"}
+              loading={step === STEPS - 1 && finishing}
               onPress={next}
             />
           </View>

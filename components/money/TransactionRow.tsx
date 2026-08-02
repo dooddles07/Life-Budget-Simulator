@@ -4,7 +4,8 @@ import Animated from "react-native-reanimated";
 import { Pressable } from "@/components/ui/Pressable";
 import { Text } from "@/components/ui/Text";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { CATEGORY_MAP, type Transaction } from "@/data/seed";
+import { CATEGORY_MAP } from "@/data/seed";
+import type { Transaction } from "@/lib/data/transactions";
 import { formatMoney, timeOfDay } from "@/lib/format";
 import { useMotion } from "@/hooks/useMotion";
 import { useCurrency, useTheme } from "@/hooks/useTheme";
@@ -41,7 +42,7 @@ export function TransactionRow({
           transaction.amount,
           currency,
           { signed: true, decimals: true }
-        )}, ${timeOfDay(transaction.date)}`}
+        )}, ${timeOfDay(transaction.occurred_at)}`}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -68,7 +69,7 @@ export function TransactionRow({
             {transaction.title}
           </Text>
           <Text variant="caption" tone="muted" numberOfLines={1}>
-            {transaction.merchant} · {timeOfDay(transaction.date)}
+            {transaction.merchant} · {timeOfDay(transaction.occurred_at)}
           </Text>
         </View>
 
