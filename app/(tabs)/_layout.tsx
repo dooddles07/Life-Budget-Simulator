@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
-import { ChartPie, House, User, Wallet } from "lucide-react-native";
+import { ChartPie, House, User, Wallet } from "@/lib/lucide-icons";
 
 import { TabBar, type TabMeta } from "@/components/nav/TabBar";
 import { useTheme } from "@/hooks/useTheme";

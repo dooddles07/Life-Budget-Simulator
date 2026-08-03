@@ -1,22 +1,24 @@
 // Maps the icon key strings stored in the DB (achievements.icon, goals.icon)
-// back to their lucide-react-native component. DB rows can't store a
-// component reference, so this is the single place that bridges the two.
+// back to their icon component. DB rows can't store a component reference,
+// so this is the single place that bridges the two.
 import {
   Clapperboard,
   CreditCard,
   Dumbbell,
   GraduationCap,
   HeartPulse,
-  Home,
-  type LucideIcon,
+  House,
+  type IconComponent,
   PiggyBank,
   Target,
   Utensils,
   Wallet,
   Zap,
-} from "lucide-react-native";
+} from "@/lib/lucide-icons";
 
-export const ICON_BY_KEY: Record<string, LucideIcon> = {
+export type { IconComponent };
+
+export const ICON_BY_KEY: Record<string, IconComponent> = {
   wallet: Wallet,
   zap: Zap,
   "piggy-bank": PiggyBank,
@@ -25,11 +27,11 @@ export const ICON_BY_KEY: Record<string, LucideIcon> = {
   "graduation-cap": GraduationCap,
   dumbbell: Dumbbell,
   "credit-card": CreditCard,
-  home: Home,
+  home: House,
   clapperboard: Clapperboard,
   target: Target,
 };
 
-export function iconForKey(key: string): LucideIcon {
+export function iconForKey(key: string): IconComponent {
   return ICON_BY_KEY[key] ?? Target;
 }

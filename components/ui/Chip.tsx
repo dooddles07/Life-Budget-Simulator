@@ -1,4 +1,4 @@
-import { type LucideIcon } from "lucide-react-native";
+import { type IconComponent } from "@/lib/lucide-icons";
 import { View } from "react-native";
 
 import { Pressable } from "@/components/ui/Pressable";
@@ -8,7 +8,7 @@ import { useTheme } from "@/hooks/useTheme";
 
 export type ChipProps = {
   label: string;
-  icon?: LucideIcon;
+  icon?: IconComponent;
   active?: boolean;
   /** Overrides the active tint -- used for category filters. */
   activeColor?: string;

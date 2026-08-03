@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { AlertTriangle, CheckCircle2, Target, TriangleAlert } from "lucide-react-native";
+import { AlertTriangle, CheckCircle2, Target, TriangleAlert } from "@/lib/lucide-icons";
 import { useMemo } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";

@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ChevronLeft, Lock } from "lucide-react-native";
+import { ChevronLeft, Lock } from "@/lib/lucide-icons";
 import { createElement, useEffect } from "react";
 import { View } from "react-native";
 import Animated, {

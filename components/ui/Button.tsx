@@ -1,4 +1,4 @@
-import { type LucideIcon } from "lucide-react-native";
+import { type IconComponent } from "@/lib/lucide-icons";
 import { ActivityIndicator, View } from "react-native";
 
 import { Pressable } from "@/components/ui/Pressable";
@@ -10,8 +10,8 @@ export type ButtonProps = {
   label: string;
   onPress?: () => void;
   variant?: "primary" | "accent" | "surface" | "ghost" | "danger";
-  icon?: LucideIcon;
-  iconRight?: LucideIcon;
+  icon?: IconComponent;
+  iconRight?: IconComponent;
   disabled?: boolean;
   loading?: boolean;
   full?: boolean;
@@ -96,7 +96,7 @@ export function IconButton({
   size = 44,
   filled,
 }: {
-  icon: LucideIcon;
+  icon: IconComponent;
   onPress?: () => void;
   label: string;
   tone?: string;

@@ -3,7 +3,7 @@
  * so screenshots and demos stay reproducible.
  */
 
-import type { LucideIcon } from "lucide-react-native";
+import type { IconComponent } from "@/lib/lucide-icons";
 import {
   Bus,
   Clapperboard,
@@ -17,7 +17,7 @@ import {
   Utensils,
   Wallet,
   Zap,
-} from "lucide-react-native";
+} from "@/lib/lucide-icons";
 
 export type CategoryId =
   | "food"
@@ -32,7 +32,7 @@ export type CategoryId =
 export type Category = {
   id: CategoryId;
   label: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   /** Index into Palette.categories -- stable across themes. */
   swatch: number;
 };
@@ -136,7 +136,7 @@ export type Goal = {
   target: number;
   saved: number;
   monthly: number;
-  icon: LucideIcon;
+  icon: IconComponent;
   accentIndex: number;
 };
 
@@ -151,7 +151,7 @@ export type Achievement = {
   id: string;
   title: string;
   detail: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   unlocked: boolean;
   /** 0-1, only meaningful while locked. */
   progress: number;
@@ -175,7 +175,7 @@ export type Persona = {
   label: string;
   blurb: string;
   income: number;
-  icon: LucideIcon;
+  icon: IconComponent;
 };
 
 export const PERSONAS: Persona[] = [

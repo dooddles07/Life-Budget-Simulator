@@ -6,7 +6,7 @@ import {
   Flame,
   TrendingUp,
   Wand2,
-} from "lucide-react-native";
+} from "@/lib/lucide-icons";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 

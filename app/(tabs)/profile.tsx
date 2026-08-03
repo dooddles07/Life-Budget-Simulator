@@ -10,8 +10,8 @@ import {
   Target,
   Trophy,
   Vibrate,
-  type LucideIcon,
-} from "lucide-react-native";
+  type IconComponent,
+} from "@/lib/lucide-icons";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -218,7 +218,7 @@ function NavTile({
   tone,
   onPress,
 }: {
-  icon: LucideIcon;
+  icon: IconComponent;
   label: string;
   value: string;
   tone: string;
@@ -271,7 +271,7 @@ function SettingRow({
   value,
   onChange,
 }: {
-  icon: LucideIcon;
+  icon: IconComponent;
   title: string;
   detail: string;
   value: boolean;

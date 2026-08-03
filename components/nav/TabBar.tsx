@@ -1,7 +1,7 @@
 // expo-router v57 vendors react-navigation internally; this is the supported path.
 import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { BlurView } from "expo-blur";
-import { Plus, type LucideIcon } from "lucide-react-native";
+import { Plus, type IconComponent } from "@/lib/lucide-icons";
 import { Platform, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -30,7 +30,7 @@ import { useThemeName, useTheme } from "@/hooks/useTheme";
 // pair inside 149 so the fourth tab is never pushed out of the pill.
 const LABEL_WIDTH = 56;
 
-export type TabMeta = { icon: LucideIcon; label: string };
+export type TabMeta = { icon: IconComponent; label: string };
 
 export function TabBar({
   state,

@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Wallet,
   X,
-} from "lucide-react-native";
+} from "@/lib/lucide-icons";
 import { useMemo, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import Animated from "react-native-reanimated";

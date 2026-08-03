@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { ArrowRight, Check, Sparkles, Target, Wallet } from "lucide-react-native";
+import { ArrowRight, Check, Sparkles, Target, Wallet } from "@/lib/lucide-icons";
 import { useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";

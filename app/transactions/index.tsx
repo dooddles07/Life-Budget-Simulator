@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ChevronLeft, SearchX } from "lucide-react-native";
+import { ChevronLeft, SearchX } from "@/lib/lucide-icons";
 import { useMemo, useState } from "react";
 import { SectionList, View } from "react-native";
 import Animated from "react-native-reanimated";

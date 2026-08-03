@@ -1,0 +1,5 @@
+{
+  "replaceAttrValues": {
+    "__ICON_STROKE_WIDTH__": "{props.strokeWidth}"
+  }
+}

@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ArrowDownLeft, ArrowUpRight, Check, Delete, X } from "lucide-react-native";
+import { ArrowDownLeft, ArrowUpRight, Check, Delete, X } from "@/lib/lucide-icons";
 import { useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";

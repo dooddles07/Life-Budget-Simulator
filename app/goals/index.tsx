@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { CalendarClock, ChevronLeft, Plus } from "lucide-react-native";
+import { CalendarClock, ChevronLeft, Plus } from "@/lib/lucide-icons";
 import { createElement } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";

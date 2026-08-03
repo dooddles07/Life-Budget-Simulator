@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ArrowDownRight, ArrowUpRight, TrendingDown, TriangleAlert, Wand2 } from "lucide-react-native";
+import { ArrowDownRight, ArrowUpRight, TrendingDown, TriangleAlert, Wand2 } from "@/lib/lucide-icons";
 import { useMemo, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import Animated from "react-native-reanimated";

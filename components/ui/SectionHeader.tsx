@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react-native";
+import { ChevronRight } from "@/lib/lucide-icons";
 import { View } from "react-native";
 
 import { Pressable } from "@/components/ui/Pressable";
