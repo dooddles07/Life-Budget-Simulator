@@ -17,6 +17,7 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<{ needsEmailConfirmation: boolean }>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refetchProfile: () => Promise<void>;
 };
 
@@ -77,13 +78,31 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (error) throw error;
   };
 
+  // RPC deletes the auth.users row (server-side, security definer); every
+  // owned table cascades from there. Session is already dead once the row
+  // is gone, but sign out anyway to clear the local AsyncStorage copy.
+  const deleteAccount = async () => {
+    const { error } = await supabase.rpc("delete_own_account");
+    if (error) throw error;
+    await supabase.auth.signOut();
+  };
+
   const refetchProfile = async () => {
     if (session) setProfile(await getProfile(session.user.id));
   };
 
   return (
     <AuthContext.Provider
-      value={{ session, profile, isLoading, signIn, signUp, signOut, refetchProfile }}
+      value={{
+        session,
+        profile,
+        isLoading,
+        signIn,
+        signUp,
+        signOut,
+        deleteAccount,
+        refetchProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

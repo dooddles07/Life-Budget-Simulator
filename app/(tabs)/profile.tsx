@@ -12,7 +12,8 @@ import {
   Vibrate,
   type IconComponent,
 } from "@/lib/lucide-icons";
-import { View } from "react-native";
+import { useState } from "react";
+import { Alert, Platform, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { Button } from "@/components/ui/Button";
@@ -29,14 +30,55 @@ import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useGoals } from "@/hooks/useGoals";
 import { useAuth } from "@/lib/auth-context";
+import { reportError } from "@/lib/crash-reporter";
 import { useMotion } from "@/hooks/useMotion";
 import { useSettings, useTheme } from "@/hooks/useTheme";
+
+// react-native-web's Alert.alert is a no-op (node_modules/react-native-web/src/exports/Alert),
+// so the destructive confirm needs a web-native fallback to actually show anything.
+function confirmDestructive(title: string, message: string): Promise<boolean> {
+  if (Platform.OS === "web") {
+    return Promise.resolve(window.confirm(`${title}\n\n${message}`));
+  }
+  return new Promise((resolve) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        { text: "Cancel", style: "cancel", onPress: () => resolve(false) },
+        { text: "Delete", style: "destructive", onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+}
 
 export default function ProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { enter, enterList } = useMotion();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, deleteAccount } = useAuth();
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    const confirmed = await confirmDestructive(
+      "Delete account",
+      "This permanently removes your profile, transactions, budgets, and goals. This can't be undone.",
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await deleteAccount();
+    } catch (err) {
+      setDeleting(false);
+      const error = err instanceof Error ? err : new Error(String(err));
+      reportError(error, { where: "deleteAccount" });
+      const message = "Couldn't delete your account. Check your connection and try again.";
+      if (Platform.OS === "web") window.alert(message);
+      else Alert.alert("Something went wrong", message);
+    }
+  };
   const { data: achievements } = useAchievements();
   const { data: goals } = useGoals();
   const {
@@ -200,6 +242,13 @@ export default function ProfileScreen() {
 
       <Animated.View entering={enterList(5)} style={{ marginTop: space.xl, gap: space.lg }}>
         <Button label="Sign out" variant="surface" icon={LogOut} full onPress={() => void signOut()} />
+        <Button
+          label="Delete account"
+          variant="danger"
+          full
+          loading={deleting}
+          onPress={() => void handleDeleteAccount()}
+        />
         <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, justifyContent: "center" }}>
           <Coins size={iconSize.sm} strokeWidth={ICON_STROKE} color={theme.fgFaint} />
           <Text variant="caption" tone="faint">
