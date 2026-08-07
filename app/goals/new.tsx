@@ -96,7 +96,7 @@ export default function NewGoalScreen() {
         <IconButton icon={X} label="Cancel" filled onPress={() => router.back()} />
       </Animated.View>
 
-      <Animated.View entering={enterList(0)} style={{ gap: space.sm, marginBottom: space.xl }}>
+      <View style={{ gap: space.sm, marginBottom: space.xl }}>
         {GOALS.map((g) => (
           <GoalOption
             key={g.id}
@@ -118,7 +118,7 @@ export default function NewGoalScreen() {
             setSelected(OTHERS_ID);
           }}
         />
-      </Animated.View>
+      </View>
 
       {isOthers ? (
         <Animated.View entering={enterList(1)} style={{ gap: space.lg, marginBottom: space.xl }}>
@@ -179,6 +179,8 @@ function GoalOption({
 
   return (
     <Pressable
+      dimOnly
+      noMinSize
       onPress={onPress}
       accessibilityRole="radio"
       accessibilityState={{ checked: active }}

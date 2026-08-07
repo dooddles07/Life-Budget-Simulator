@@ -142,8 +142,8 @@ export type Goal = {
 
 export const GOALS: Goal[] = [
   { id: "g1", title: "Emergency fund", target: 180000, saved: 112400, monthly: 8000, icon: PiggyBank, accentIndex: 2 },
-  { id: "g2", title: "Japan trip", target: 120000, saved: 43600, monthly: 6000, icon: Clapperboard, accentIndex: 0 },
-  { id: "g3", title: "New laptop", target: 95000, saved: 71250, monthly: 5000, icon: CreditCard, accentIndex: 1 },
+  { id: "g2", title: "Travel fund", target: 120000, saved: 43600, monthly: 6000, icon: Clapperboard, accentIndex: 0 },
+  { id: "g3", title: "New gadget", target: 95000, saved: 71250, monthly: 5000, icon: CreditCard, accentIndex: 1 },
   { id: "g4", title: "Down payment", target: 900000, saved: 96000, monthly: 12000, icon: Home, accentIndex: 6 },
 ];
 
@@ -243,7 +243,7 @@ export const INSIGHTS: Insight[] = [
     id: "i2",
     tone: "warn",
     title: "Coffee is your quiet leak",
-    body: "9 runs this month at ₱185. That is ₱19,980 a year — a third of your Japan trip.",
+    body: "9 runs this month at ₱185. That is ₱19,980 a year — a third of your travel fund.",
   },
   {
     id: "i3",
