@@ -205,7 +205,11 @@ export default function HomeScreen() {
                 colorEnd={burn > 0.9 ? theme.warning : theme.primaryBright}
                 delay={260}
               >
-                <View style={{ alignItems: "center" }}>
+                <View
+                  accessible
+                  accessibilityLabel={`${Math.round(burn * 100)} percent of budget used`}
+                  style={{ alignItems: "center" }}
+                >
                   <Text variant="h3" tabular>
                     {Math.round(burn * 100)}%
                   </Text>

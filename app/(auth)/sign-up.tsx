@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
@@ -53,55 +53,60 @@ export default function SignUp() {
 
   return (
     <Screen scroll={false} style={{ justifyContent: "center" }}>
-      <View style={{ gap: space.xl }}>
-        <Logo size={72} style={{ alignSelf: "center" }} />
-        <View style={{ gap: space.xs }}>
-          <Text variant="h1">Create an account</Text>
-          <Text variant="body" tone="muted">
-            Your data stays private. No one else can see it.
-          </Text>
-        </View>
-
-        <View style={{ gap: space.lg }}>
-          <TextField
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-          />
-          <TextField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password-new"
-          />
-          {error ? (
-            <Text variant="label" tone="danger">
-              {error}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "center" }}
+      >
+        <View style={{ gap: space.xl }}>
+          <Logo size={72} style={{ alignSelf: "center" }} />
+          <View style={{ gap: space.xs }}>
+            <Text variant="h1">Create an account</Text>
+            <Text variant="body" tone="muted">
+              Your data stays private. No one else can see it.
             </Text>
-          ) : null}
-          <Button
-            label="Sign up"
-            variant="primary"
-            full
-            size="lg"
-            loading={loading}
-            disabled={!email || password.length < 6}
-            onPress={submit}
-          />
-        </View>
+          </View>
 
-        <Link href="/(auth)/sign-in" asChild>
-          <Pressable>
-            <Text variant="label" tone="primary" center>
-              Already have an account? Sign in
-            </Text>
-          </Pressable>
-        </Link>
-      </View>
+          <View style={{ gap: space.lg }}>
+            <TextField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+            />
+            <TextField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password-new"
+            />
+            {error ? (
+              <Text variant="label" tone="danger">
+                {error}
+              </Text>
+            ) : null}
+            <Button
+              label="Sign up"
+              variant="primary"
+              full
+              size="lg"
+              loading={loading}
+              disabled={!email || password.length < 6}
+              onPress={submit}
+            />
+          </View>
+
+          <Link href="/(auth)/sign-in" asChild>
+            <Pressable>
+              <Text variant="label" tone="primary" center>
+                Already have an account? Sign in
+              </Text>
+            </Pressable>
+          </Link>
+        </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }

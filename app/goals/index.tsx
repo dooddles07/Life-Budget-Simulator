@@ -105,7 +105,9 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
         </View>
 
         <View style={{ flex: 1 }}>
-          <Text variant="labelSb">{goal.title}</Text>
+          <Text variant="labelSb" numberOfLines={1}>
+            {goal.title}
+          </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: space.xs, marginTop: 2 }}>
             <CalendarClock size={14} strokeWidth={ICON_STROKE} color={theme.fgMuted} />
             <Text variant="caption" tone="muted" tabular>

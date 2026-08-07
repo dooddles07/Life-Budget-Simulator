@@ -8,6 +8,10 @@ import { useTheme } from "@/hooks/useTheme";
 /** Height of the floating tab bar + its bottom offset, so scroll content clears it. */
 export const TAB_BAR_CLEARANCE = 96;
 
+/** Matches TabBar's own cap -- content stays a readable column on tablets
+ *  instead of stretching edge-to-edge (iOS ships with supportsTablet: true). */
+export const CONTENT_MAX_WIDTH = 460;
+
 export type ScreenProps = {
   children: ReactNode;
   /** Renders a ScrollView; set false for screens that own their own list. */
@@ -46,8 +50,12 @@ export function Screen({
 
   if (!scroll) {
     return (
-      <View style={[{ flex: 1, backgroundColor: theme.bg }, padding, style, contentStyle]}>
-        {children}
+      <View style={[{ flex: 1, backgroundColor: theme.bg, alignItems: "center" }, style]}>
+        <View
+          style={[{ flex: 1, width: "100%", maxWidth: CONTENT_MAX_WIDTH }, padding, contentStyle]}
+        >
+          {children}
+        </View>
       </View>
     );
   }
@@ -55,12 +63,14 @@ export function Screen({
   return (
     <ScrollView
       style={[{ flex: 1, backgroundColor: theme.bg }, style]}
-      contentContainerStyle={[padding, contentStyle]}
+      contentContainerStyle={{ alignItems: "center" }}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
       {...scrollProps}
     >
-      {children}
+      <View style={[{ width: "100%", maxWidth: CONTENT_MAX_WIDTH }, padding, contentStyle]}>
+        {children}
+      </View>
     </ScrollView>
   );
 }

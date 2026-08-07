@@ -20,6 +20,7 @@ export function TextField({ label, error, style, onFocus, onBlur, ...rest }: Tex
         {label}
       </Text>
       <TextInput
+        accessibilityLabel={error ? `${label}, error: ${error}` : label}
         placeholderTextColor={theme.fgFaint}
         style={[
           {

@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
@@ -36,55 +36,60 @@ export default function SignIn() {
 
   return (
     <Screen scroll={false} style={{ justifyContent: "center" }}>
-      <View style={{ gap: space.xl }}>
-        <Logo size={72} style={{ alignSelf: "center" }} />
-        <View style={{ gap: space.xs }}>
-          <Text variant="h1">Welcome back</Text>
-          <Text variant="body" tone="muted">
-            Sign in to pick up where you left off.
-          </Text>
-        </View>
-
-        <View style={{ gap: space.lg }}>
-          <TextField
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoComplete="email"
-            keyboardType="email-address"
-          />
-          <TextField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password"
-          />
-          {error ? (
-            <Text variant="label" tone="danger">
-              {error}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "center" }}
+      >
+        <View style={{ gap: space.xl }}>
+          <Logo size={72} style={{ alignSelf: "center" }} />
+          <View style={{ gap: space.xs }}>
+            <Text variant="h1">Welcome back</Text>
+            <Text variant="body" tone="muted">
+              Sign in to pick up where you left off.
             </Text>
-          ) : null}
-          <Button
-            label="Sign in"
-            variant="primary"
-            full
-            size="lg"
-            loading={loading}
-            disabled={!email || !password}
-            onPress={submit}
-          />
-        </View>
+          </View>
 
-        <Link href="/(auth)/sign-up" asChild>
-          <Pressable>
-            <Text variant="label" tone="primary" center>
-              Don&apos;t have an account? Sign up
-            </Text>
-          </Pressable>
-        </Link>
-      </View>
+          <View style={{ gap: space.lg }}>
+            <TextField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+            />
+            <TextField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password"
+            />
+            {error ? (
+              <Text variant="label" tone="danger">
+                {error}
+              </Text>
+            ) : null}
+            <Button
+              label="Sign in"
+              variant="primary"
+              full
+              size="lg"
+              loading={loading}
+              disabled={!email || !password}
+              onPress={submit}
+            />
+          </View>
+
+          <Link href="/(auth)/sign-up" asChild>
+            <Pressable>
+              <Text variant="label" tone="primary" center>
+                Don&apos;t have an account? Sign up
+              </Text>
+            </Pressable>
+          </Link>
+        </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }

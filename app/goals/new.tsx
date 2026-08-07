@@ -127,6 +127,7 @@ export default function NewGoalScreen() {
             value={customTitle}
             onChangeText={setCustomTitle}
             placeholder="e.g. New phone"
+            maxLength={60}
           />
           <TextField
             label="Target amount"

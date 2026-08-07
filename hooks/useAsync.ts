@@ -1,6 +1,8 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState, type DependencyList } from "react";
 
+import { reportError } from "@/lib/crash-reporter";
+
 export type AsyncState<T> = {
   data: T | null;
   loading: boolean;
@@ -25,7 +27,12 @@ export function useAsync<T>(fn: () => Promise<T>, deps: DependencyList): AsyncSt
         const result = await fn();
         if (!cancelled) setData(result);
       } catch (e: unknown) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Something went wrong");
+        if (!cancelled) {
+          // The real error (driver message, status code) goes to crash reporting for
+          // diagnosis; the UI only ever needs to know loading failed and offer a retry.
+          reportError(e instanceof Error ? e : new Error(String(e)), { where: "useAsync" });
+          setError("Couldn't load your data. Check your connection and try again.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
