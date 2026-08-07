@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransactionRow } from "@/components/money/TransactionRow";
 import { IconButton } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
+import { CONTENT_MAX_WIDTH } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { ICON_STROKE, iconSize, space } from "@/constants/theme";
@@ -59,7 +60,8 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.bg }}>
+    <View style={{ flex: 1, backgroundColor: theme.bg, alignItems: "center" }}>
+      <View style={{ flex: 1, width: "100%", maxWidth: CONTENT_MAX_WIDTH }}>
       <Animated.View
         entering={enter()}
         style={{
@@ -85,6 +87,7 @@ export default function TransactionsScreen() {
       </Animated.View>
 
       <SectionList
+        style={{ flex: 1 }}
         sections={sections}
         keyExtractor={(item) => item.id}
         stickySectionHeadersEnabled
@@ -152,6 +155,7 @@ export default function TransactionsScreen() {
           </View>
         }
       />
+      </View>
     </View>
   );
 }
