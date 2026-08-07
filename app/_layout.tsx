@@ -100,6 +100,10 @@ function Shell() {
             options={{ presentation: "modal", animation: "slide_from_bottom" }}
           />
           <Stack.Screen name="goals/index" />
+          <Stack.Screen
+            name="goals/new"
+            options={{ presentation: "modal", animation: "slide_from_bottom" }}
+          />
           <Stack.Screen name="achievements/index" />
           <Stack.Screen name="simulator/index" />
           <Stack.Screen name="transactions/index" />

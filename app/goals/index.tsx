@@ -58,7 +58,14 @@ export default function GoalsScreen() {
       </View>
 
       <Animated.View entering={enterList(goals.length)} style={{ marginTop: space.xl }}>
-        <Button full size="lg" variant="surface" icon={Plus} label="New goal" />
+        <Button
+          full
+          size="lg"
+          variant="surface"
+          icon={Plus}
+          label="New goal"
+          onPress={() => router.push("/goals/new")}
+        />
       </Animated.View>
     </Screen>
   );
