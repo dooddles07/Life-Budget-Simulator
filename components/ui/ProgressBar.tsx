@@ -17,8 +17,6 @@ export type ProgressBarProps = {
   trackColor?: string;
   height?: number;
   delay?: number;
-  /** Slight spring overshoot -- reads as "juice" on XP and goal bars. */
-  bouncy?: boolean;
   style?: ViewStyle;
   accessibilityLabel?: string;
 };
@@ -29,7 +27,6 @@ export function ProgressBar({
   trackColor,
   height = 8,
   delay = 0,
-  bouncy,
   style,
   accessibilityLabel,
 }: ProgressBarProps) {
@@ -39,11 +36,8 @@ export function ProgressBar({
   const t = useSharedValue(0);
 
   useEffect(() => {
-    t.value = withDelay(
-      reduce ? 0 : delay,
-      toSpring(clamped, bouncy ? motion.springBouncy : motion.springSoft)
-    );
-  }, [clamped, delay, bouncy, reduce, toSpring, t]);
+    t.value = withDelay(reduce ? 0 : delay, toSpring(clamped, motion.springSoft));
+  }, [clamped, delay, reduce, toSpring, t]);
 
   const fill = useAnimatedStyle(() => ({
     width: `${t.value * 100}%`,

@@ -123,7 +123,6 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
         <ProgressBar
           progress={progress}
           color={accent}
-          bouncy
           height={10}
           delay={delay}
           accessibilityLabel={`${goal.title} progress`}

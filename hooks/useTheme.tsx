@@ -13,10 +13,8 @@ type Prefs = {
   setThemeOverride: (t: ThemeName | null) => void;
   currency: CurrencyCode;
   setCurrency: (c: CurrencyCode) => void;
-  /** True when the OS asks for reduced motion OR the user forced it in Profile. */
+  /** True when the OS asks for reduced motion. */
   reduceMotion: boolean;
-  reduceMotionOverride: boolean;
-  setReduceMotionOverride: (v: boolean) => void;
   haptics: boolean;
   setHaptics: (v: boolean) => void;
 };
@@ -29,7 +27,6 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
 
   const [themeOverride, setThemeOverride] = useState<ThemeName | null>(null);
   const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY);
-  const [reduceMotionOverride, setReduceMotionOverride] = useState(false);
   const [haptics, setHaptics] = useState(true);
 
   const themeName: ThemeName =
@@ -43,13 +40,11 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       setThemeOverride,
       currency,
       setCurrency,
-      reduceMotion: systemReduceMotion || reduceMotionOverride,
-      reduceMotionOverride,
-      setReduceMotionOverride,
+      reduceMotion: systemReduceMotion,
       haptics,
       setHaptics,
     }),
-    [themeName, themeOverride, currency, systemReduceMotion, reduceMotionOverride, haptics]
+    [themeName, themeOverride, currency, systemReduceMotion, haptics]
   );
 
   return <PrefsContext.Provider value={value}>{children}</PrefsContext.Provider>;

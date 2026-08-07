@@ -77,7 +77,6 @@ export default function AchievementsScreen() {
           <ProgressBar
             progress={level.progress}
             color={theme.accent}
-            bouncy
             height={10}
             delay={200}
             accessibilityLabel="Experience to next level"

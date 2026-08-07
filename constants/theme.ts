@@ -163,7 +163,6 @@ export const motion = {
   counter: 620,
   stagger: 45,
   spring: { damping: 20, stiffness: 180, mass: 0.9 },
-  springBouncy: { damping: 12, stiffness: 140, mass: 0.9 },
   springSoft: { damping: 24, stiffness: 120, mass: 1 },
 } as const;
 

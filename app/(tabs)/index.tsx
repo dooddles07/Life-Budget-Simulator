@@ -130,7 +130,6 @@ export default function HomeScreen() {
             <ProgressBar
               progress={level.progress}
               color={theme.accent}
-              bouncy
               height={10}
               delay={220}
               accessibilityLabel="Experience to next level"

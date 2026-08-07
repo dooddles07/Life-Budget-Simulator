@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import {
-  Accessibility,
   ChevronRight,
   Coins,
   LogOut,
@@ -86,8 +85,6 @@ export default function ProfileScreen() {
     setThemeOverride,
     currency,
     setCurrency,
-    reduceMotionOverride,
-    setReduceMotionOverride,
     haptics,
     setHaptics,
   } = useSettings();
@@ -139,7 +136,6 @@ export default function ProfileScreen() {
             <ProgressBar
               progress={level.progress}
               color={theme.accent}
-              bouncy
               delay={200}
               accessibilityLabel="Experience to next level"
             />
@@ -222,14 +218,6 @@ export default function ProfileScreen() {
       <SectionHeader title="Accessibility" />
       <Animated.View entering={enterList(4)}>
         <Card padded="lg" style={{ gap: space.lg }}>
-          <SettingRow
-            icon={Accessibility}
-            title="Reduce motion"
-            detail="Removes springs, staggers, and counter rolls. Your system setting already forces this on."
-            value={reduceMotionOverride}
-            onChange={setReduceMotionOverride}
-          />
-          <View style={{ height: 1, backgroundColor: theme.border }} />
           <SettingRow
             icon={Vibrate}
             title="Haptics"
