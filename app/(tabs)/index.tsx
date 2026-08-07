@@ -7,7 +7,7 @@ import {
   TrendingUp,
   Wand2,
 } from "@/lib/lucide-icons";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { NumberTicker } from "@/components/money/NumberTicker";
@@ -23,7 +23,7 @@ import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { levelFromXp } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
-import { formatMoney, greeting } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { useAuth } from "@/lib/auth-context";
 import { useHomeData } from "@/hooks/useHomeData";
 import { useMotion } from "@/hooks/useMotion";
@@ -58,9 +58,12 @@ export default function HomeScreen() {
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text variant="caption" tone="muted">
-              {greeting()}
-            </Text>
+            <Image
+              source={require("@/assets/splash-icon.png")}
+              style={{ width: 22, height: 22, marginBottom: 2 }}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
             <Text variant="h2" numberOfLines={1}>
               {profile.name}
             </Text>

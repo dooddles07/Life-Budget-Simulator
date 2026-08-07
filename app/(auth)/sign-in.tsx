@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Pressable } from "@/components/ui/Pressable";
@@ -36,6 +36,12 @@ export default function SignIn() {
   return (
     <Screen scroll={false} style={{ justifyContent: "center" }}>
       <View style={{ gap: space.xl }}>
+        <Image
+          source={require("@/assets/splash-icon.png")}
+          style={{ width: 72, height: 72, alignSelf: "center" }}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
         <View style={{ gap: space.xs }}>
           <Text variant="h1">Welcome back</Text>
           <Text variant="body" tone="muted">

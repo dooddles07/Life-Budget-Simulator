@@ -12,7 +12,7 @@ import {
   type IconComponent,
 } from "@/lib/lucide-icons";
 import { useState } from "react";
-import { Alert, Platform, View } from "react-native";
+import { Alert, Platform, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { Button } from "@/components/ui/Button";
@@ -25,11 +25,12 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Switch } from "@/components/ui/Switch";
 import { Text } from "@/components/ui/Text";
 import { CURRENCIES, levelFromXp, type CurrencyCode } from "@/constants/config";
-import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
+import { ICON_STROKE, iconSize, radius, space, type as typeScale } from "@/constants/theme";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useGoals } from "@/hooks/useGoals";
 import { useAuth } from "@/lib/auth-context";
 import { reportError } from "@/lib/crash-reporter";
+import { upsertProfile } from "@/lib/data/profiles";
 import { useMotion } from "@/hooks/useMotion";
 import { useSettings, useTheme } from "@/hooks/useTheme";
 
@@ -56,8 +57,29 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { enter, enterList } = useMotion();
-  const { profile, signOut, deleteAccount } = useAuth();
+  const { profile, signOut, deleteAccount, refetchProfile } = useAuth();
   const [deleting, setDeleting] = useState(false);
+  const [nameInput, setNameInput] = useState(profile?.name ?? "");
+  // Adjust local state during render when the loaded profile's name changes
+  // (e.g. after saving) -- React's sanctioned alternative to a sync effect.
+  const [syncedName, setSyncedName] = useState(profile?.name);
+  if (profile && profile.name !== syncedName) {
+    setSyncedName(profile.name);
+    setNameInput(profile.name);
+  }
+
+  const saveName = async () => {
+    if (!profile) return;
+    const trimmed = nameInput.trim();
+    if (trimmed === profile.name) return;
+    try {
+      await upsertProfile({ id: profile.id, name: trimmed });
+      await refetchProfile();
+    } catch (err) {
+      reportError(err instanceof Error ? err : new Error(String(err)), { where: "saveName" });
+      setNameInput(profile.name);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     const confirmed = await confirmDestructive(
@@ -117,12 +139,29 @@ export default function ProfileScreen() {
               }}
             >
               <Text variant="h2" tone="primary">
-                {profile.name.charAt(0) || "?"}
+                {profile.name.charAt(0).toUpperCase() || "?"}
               </Text>
             </View>
 
             <View style={{ flex: 1, gap: 2 }}>
-              <Text variant="h3">{profile.name || "You"}</Text>
+              <TextInput
+                value={nameInput}
+                onChangeText={setNameInput}
+                onBlur={() => void saveName()}
+                placeholder="Add your name"
+                placeholderTextColor={theme.fgFaint}
+                style={[
+                  typeScale.h3,
+                  {
+                    color: theme.fg,
+                    padding: 0,
+                    borderBottomWidth: 1,
+                    borderBottomColor: theme.border,
+                    paddingBottom: 2,
+                  },
+                ]}
+                accessibilityLabel="Your name"
+              />
               <Text variant="caption" tone="muted">
                 {profile.handle}
               </Text>

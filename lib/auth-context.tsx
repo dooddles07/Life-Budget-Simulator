@@ -67,8 +67,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     // profiles.id references auth.users(id) -- create the row now so
     // onboarding has something to upsert persona/income/goal onto. Skipped
     // if email confirmation is required and no session came back yet.
+    // name defaults from the email's local part since nothing in onboarding
+    // ever asks for one -- editable later in Profile.
     if (data.user && data.session) {
-      await upsertProfile({ id: data.user.id });
+      await upsertProfile({ id: data.user.id, name: email.split("@")[0] });
     }
     return { needsEmailConfirmation: !data.session };
   };

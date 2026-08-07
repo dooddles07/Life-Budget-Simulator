@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Pressable } from "@/components/ui/Pressable";
@@ -43,7 +43,7 @@ export default function SignUp() {
         <View style={{ gap: space.md }}>
           <Text variant="h1">Check your email</Text>
           <Text variant="body" tone="muted">
-            We sent a confirmation link to {email}. Follow it to finish signing up.
+            We sent a confirmation link to {email}. Tap it to finish signing up.
           </Text>
         </View>
       </Screen>
@@ -53,10 +53,16 @@ export default function SignUp() {
   return (
     <Screen scroll={false} style={{ justifyContent: "center" }}>
       <View style={{ gap: space.xl }}>
+        <Image
+          source={require("@/assets/splash-icon.png")}
+          style={{ width: 72, height: 72, alignSelf: "center" }}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
         <View style={{ gap: space.xs }}>
           <Text variant="h1">Create an account</Text>
           <Text variant="body" tone="muted">
-            Your data stays yours -- isolated per account, nobody else can see it.
+            Your data stays private. No one else can see it.
           </Text>
         </View>
 
