@@ -87,11 +87,19 @@ export default function AchievementsScreen() {
       <Text variant="h3" style={{ marginBottom: space.md }}>
         Earned
       </Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.md, marginBottom: space.xl }}>
-        {unlocked.map((item, i) => (
-          <BadgeTile key={item.id} achievement={item} index={i} />
-        ))}
-      </View>
+      {unlocked.length === 0 ? (
+        <Card padded="lg" style={{ marginBottom: space.xl }}>
+          <Text variant="body" tone="muted">
+            Nothing earned yet -- log a transaction to get started.
+          </Text>
+        </Card>
+      ) : (
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.md, marginBottom: space.xl }}>
+          {unlocked.map((item, i) => (
+            <BadgeTile key={item.id} achievement={item} index={i} />
+          ))}
+        </View>
+      )}
 
       <Text variant="h3" style={{ marginBottom: space.md }}>
         In progress

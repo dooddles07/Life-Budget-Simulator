@@ -44,8 +44,11 @@ export default function AddScreen() {
       if (key === ".") return prev.includes(".") ? prev : `${prev}.`;
       if (prev === "0") return key;
       // Cap at 2 decimal places so the display never overflows its line.
-      const [, frac] = prev.split(".");
+      const [whole, frac] = prev.split(".");
       if (frac && frac.length >= 2) return prev;
+      // Cap the whole part at 10 digits (up to 9,999,999,999) -- an unbounded
+      // amount would overflow the display and distort downstream totals.
+      if (!prev.includes(".") && whole.length >= 10) return prev;
       return prev + key;
     });
   };

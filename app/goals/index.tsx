@@ -49,13 +49,21 @@ export default function GoalsScreen() {
         </View>
       </Animated.View>
 
-      <View style={{ gap: space.md }}>
-        {goals.map((goal, i) => (
-          <Animated.View key={goal.id} entering={enterList(i)}>
-            <GoalCard goal={goal} delay={i * 60} />
-          </Animated.View>
-        ))}
-      </View>
+      {goals.length === 0 ? (
+        <Card padded="lg">
+          <Text variant="body" tone="muted" center>
+            No goals yet. Add one below to start tracking progress.
+          </Text>
+        </Card>
+      ) : (
+        <View style={{ gap: space.md }}>
+          {goals.map((goal, i) => (
+            <Animated.View key={goal.id} entering={enterList(i)}>
+              <GoalCard goal={goal} delay={i * 60} />
+            </Animated.View>
+          ))}
+        </View>
+      )}
 
       <Animated.View entering={enterList(goals.length)} style={{ marginTop: space.xl }}>
         <Button

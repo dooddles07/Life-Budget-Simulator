@@ -135,6 +135,7 @@ export default function NewGoalScreen() {
             onChangeText={setCustomTarget}
             keyboardType="numeric"
             placeholder="0"
+            maxLength={10}
           />
           <TextField
             label="Monthly contribution (optional)"
@@ -142,6 +143,7 @@ export default function NewGoalScreen() {
             onChangeText={setCustomMonthly}
             keyboardType="numeric"
             placeholder="0"
+            maxLength={10}
           />
         </Animated.View>
       ) : null}
