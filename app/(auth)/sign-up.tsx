@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import { Pressable } from "@/components/ui/Pressable";
 import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
@@ -53,12 +54,7 @@ export default function SignUp() {
   return (
     <Screen scroll={false} style={{ justifyContent: "center" }}>
       <View style={{ gap: space.xl }}>
-        <Image
-          source={require("@/assets/splash-icon.png")}
-          style={{ width: 72, height: 72, alignSelf: "center" }}
-          resizeMode="contain"
-          accessibilityIgnoresInvertColors
-        />
+        <Logo size={72} style={{ alignSelf: "center" }} />
         <View style={{ gap: space.xs }}>
           <Text variant="h1">Create an account</Text>
           <Text variant="body" tone="muted">

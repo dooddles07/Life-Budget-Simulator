@@ -7,13 +7,14 @@ import {
   TrendingUp,
   Wand2,
 } from "@/lib/lucide-icons";
-import { Image, View } from "react-native";
+import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { NumberTicker } from "@/components/money/NumberTicker";
 import { TransactionRow } from "@/components/money/TransactionRow";
 import { IconButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Logo } from "@/components/ui/Logo";
 import { Pressable } from "@/components/ui/Pressable";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ProgressRing } from "@/components/ui/ProgressRing";
@@ -66,12 +67,7 @@ export default function HomeScreen() {
                 marginBottom: space.xs,
               }}
             >
-              <Image
-                source={require("@/assets/splash-icon.png")}
-                style={{ width: 28, height: 28 }}
-                resizeMode="contain"
-                accessibilityIgnoresInvertColors
-              />
+              <Logo size={28} />
               <Text
                 numberOfLines={1}
                 style={{ fontFamily: font.display, fontSize: 16 }}

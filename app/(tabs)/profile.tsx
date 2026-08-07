@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import {
   ChevronRight,
-  Coins,
   LogOut,
   Moon,
   Sun,
@@ -19,6 +18,7 @@ import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
+import { Logo } from "@/components/ui/Logo";
 import { Pressable } from "@/components/ui/Pressable";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
@@ -293,7 +293,7 @@ export default function ProfileScreen() {
           onPress={() => void handleDeleteAccount()}
         />
         <View style={{ flexDirection: "row", alignItems: "center", gap: space.sm, justifyContent: "center" }}>
-          <Coins size={iconSize.sm} strokeWidth={ICON_STROKE} color={theme.fgFaint} />
+          <Logo size={iconSize.sm} />
           <Text variant="caption" tone="faint">
             Life Budget Simulator
           </Text>
