@@ -22,7 +22,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { levelFromXp } from "@/constants/config";
-import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
+import { ICON_STROKE, font, iconSize, radius, space } from "@/constants/theme";
 import { formatMoney } from "@/lib/format";
 import { useAuth } from "@/lib/auth-context";
 import { useHomeData } from "@/hooks/useHomeData";
@@ -58,12 +58,27 @@ export default function HomeScreen() {
           }}
         >
           <View style={{ flex: 1 }}>
-            <Image
-              source={require("@/assets/splash-icon.png")}
-              style={{ width: 22, height: 22, marginBottom: 2 }}
-              resizeMode="contain"
-              accessibilityIgnoresInvertColors
-            />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: space.xs,
+                marginBottom: space.xs,
+              }}
+            >
+              <Image
+                source={require("@/assets/splash-icon.png")}
+                style={{ width: 28, height: 28 }}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+              />
+              <Text
+                numberOfLines={1}
+                style={{ fontFamily: font.display, fontSize: 16 }}
+              >
+                Life Budget Simulator
+              </Text>
+            </View>
             <Text variant="h2" numberOfLines={1}>
               {profile.name}
             </Text>

@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Alert, Platform, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
 
+import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
@@ -100,8 +101,12 @@ export default function ProfileScreen() {
       else Alert.alert("Something went wrong", message);
     }
   };
-  const { data: achievements } = useAchievements();
-  const { data: goals } = useGoals();
+  const {
+    data: achievements,
+    error: achievementsError,
+    refetch: refetchAchievements,
+  } = useAchievements();
+  const { data: goals, error: goalsError, refetch: refetchGoals } = useGoals();
   const {
     themeOverride,
     setThemeOverride,
@@ -111,7 +116,18 @@ export default function ProfileScreen() {
     setHaptics,
   } = useSettings();
 
-  if (!profile) return null;
+  if (!profile) return <LoadingState />;
+  if (achievementsError || goalsError) {
+    return (
+      <ErrorState
+        message={achievementsError ?? goalsError ?? "Couldn't load your progress."}
+        onRetry={() => {
+          refetchAchievements();
+          refetchGoals();
+        }}
+      />
+    );
+  }
 
   const level = levelFromXp(profile.xp);
   const unlockedCount = achievements?.filter((a) => a.unlocked).length ?? 0;

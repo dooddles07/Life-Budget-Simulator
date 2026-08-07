@@ -77,11 +77,17 @@ timings) → `hooks/useTheme.tsx`'s `PrefsProvider` (resolves light/dark, curren
 `components/ui/*` primitives via `useTheme()`. Reduced motion is OS-level only (`useReducedMotion`
 from Reanimated) — there is no in-app override toggle.
 
-**`hooks/useMotion.ts` is the only place animations are constructed.** `enter`/`enterList` for
-screen/list entrances, `toSpring`/`toTiming` for value animations. Default spring config is
-`motion.springSoft` (critically damped, no overshoot) — deliberately not `motion.springBouncy`,
-which was removed. Don't reach for `withSpring`/`withTiming` directly in a screen; go through this
-hook so reduced-motion handling stays centralized.
+**`hooks/useMotion.ts` is the only place animations are constructed — outside of gesture/derived
+worklets.** `enter`/`enterList` for screen/list entrances, `toSpring`/`toTiming` for value
+animations. Default spring config is `motion.springSoft` (critically damped, no overshoot) —
+deliberately not `motion.springBouncy`, which was removed. Don't reach for `withSpring`/
+`withTiming` directly in a screen; go through this hook so reduced-motion handling stays
+centralized. Exception: code running inside a Reanimated worklet (`.onBegin`/`.onUpdate`/
+`.onFinalize` gesture callbacks, `useDerivedValue`) can't call `toSpring`/`toTiming` — Reanimated's
+autoworketization doesn't extend across module boundaries to hook-returned closures, so calling
+them from a worklet throws at runtime. `components/ui/Slider.tsx` and `components/nav/TabBar.tsx`
+call `withTiming`/`withSpring` directly for this reason, duplicating the `reduce`-motion check
+inline — this is intentional, not a violation.
 
 **Two unrelated icon systems, don't conflate them:**
 - In-app UI icons: `scripts/generate-icons.mjs` fetches SVGs from the Iconify API into
@@ -92,10 +98,10 @@ hook so reduced-motion handling stays centralized.
   component. Adding a new goal/achievement icon means adding it to both this map and wherever the
   kebab-case key is written.
 
-**`data/seed.ts` is mixed — most of it is live, some of it is dead.** `CATEGORIES`/`CATEGORY_MAP`,
+**`data/seed.ts` holds onboarding/preset data, all read at runtime:** `CATEGORIES`/`CATEGORY_MAP`,
 `PERSONAS`, `GOALS` (onboarding + New Goal presets), and `PROFILE` (Simulator's baseline
-coffee/subscription numbers) are all still read at runtime. `INSIGHTS` is not — real insights come
-from `lib/aggregate.ts`'s `computeBudgetInsights`, computed from actual transaction data.
+coffee/subscription numbers). Budget insights are computed live by `lib/aggregate.ts`'s
+`computeBudgetInsights` from actual transaction data, not seeded.
 
 **Web output mode is `"single"` (SPA), not `"static"`** (`app.json`). This means `app/+html.tsx`
 has no effect — expo-router's static-render document override only applies under `"static"`

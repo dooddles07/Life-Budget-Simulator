@@ -17,8 +17,8 @@ the app collects, how it's stored, and how you can remove it.
 | Name, handle, income, budget, goal, and transaction data you enter | Powers the budgeting features you use — envelopes, the net-worth simulator, goals, achievements | Supabase Postgres, in a database row scoped to your account |
 | Persona, currency, and app preference choices | Personalizes onboarding and display | Same as above |
 
-We do not collect location, contacts, photos, device identifiers, or advertising IDs. The app
-has no ads and no third-party analytics or trackers as of this version.
+We do not collect location, contacts, photos, or advertising IDs. The app has no ads and does
+not use analytics. It does use Sentry for crash reporting (see below).
 
 ## How your data is protected
 
@@ -30,10 +30,10 @@ read or write your data. Source: [`supabase/migrations/0001_init.sql`](../supaba
 ## Who processes your data
 
 Supabase (supabase.com) hosts our authentication and database as our infrastructure provider.
-We do not sell, rent, or share your data with advertisers or other third parties.
-
-If crash reporting is added in a future version, this policy will be updated to name that
-provider before it ships.
+Sentry (sentry.io) receives crash and error reports so we can fix bugs — this includes the
+error message, stack trace, device model, and OS/app version, but not your budgeting data
+unless it happens to appear in an error message. We do not sell, rent, or share your data with
+advertisers or other third parties.
 
 ## Data retention and deletion
 

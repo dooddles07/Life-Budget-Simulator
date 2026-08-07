@@ -33,7 +33,7 @@ export function useMotion() {
       /** Spring falls back to a 0ms timing so the value still commits. */
       toSpring: (to: number, config: WithSpringConfig = motion.springSoft) =>
         reduce ? withTiming(to, { duration: 0 }) : withSpring(to, config),
-      toTiming: (to: number, duration = motion.standard, easing?: EasingFunction) =>
+      toTiming: (to: number, duration: number = motion.standard, easing?: EasingFunction) =>
         withTiming(to, timing(duration, easing)),
       // Reduced motion returns undefined rather than a 0ms animation: Reanimated's
       // web entering path holds the element at `visibility: hidden` until the

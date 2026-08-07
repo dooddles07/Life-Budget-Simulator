@@ -14,6 +14,11 @@ import { TAP_MIN, motion, radius, space } from "@/constants/theme";
 import { useMotion } from "@/hooks/useMotion";
 import { useTheme } from "@/hooks/useTheme";
 
+// This file calls withTiming/withSpring directly instead of useMotion()'s toSpring/toTiming:
+// those are plain closures returned from a hook in another file, and Reanimated's worklet
+// autoworketization doesn't extend across module boundaries, so they aren't callable from
+// inside these gesture worklets (.onBegin/.onUpdate/.onFinalize run on the UI thread).
+
 const THUMB = 28;
 
 export type SliderProps = {

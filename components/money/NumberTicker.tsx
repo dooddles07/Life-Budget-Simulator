@@ -7,12 +7,7 @@ import {
   type TextInputProps,
   type TextStyle,
 } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedProps,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { Easing, useAnimatedProps, useSharedValue } from "react-native-reanimated";
 
 import { type TextTone, type TextVariant } from "@/components/ui/Text";
 import { CURRENCIES, type CurrencyCode } from "@/constants/config";
@@ -62,16 +57,13 @@ export function NumberTicker({
   const theme = useTheme();
   const appCurrency = useCurrency();
   const code = currency ?? appCurrency;
-  const { reduce } = useMotion();
+  const { toTiming } = useMotion();
 
   const progress = useSharedValue(value);
 
   useEffect(() => {
-    progress.value = withTiming(value, {
-      duration: reduce ? 0 : duration,
-      easing: Easing.out(Easing.exp),
-    });
-  }, [value, duration, reduce, progress]);
+    progress.value = toTiming(value, duration, Easing.out(Easing.exp));
+  }, [value, duration, toTiming, progress]);
 
   const symbol = CURRENCIES[code].symbol;
   const places = decimals ? CURRENCIES[code].decimals : 0;

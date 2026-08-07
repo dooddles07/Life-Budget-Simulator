@@ -18,6 +18,11 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useMotion } from "@/hooks/useMotion";
 import { useThemeName, useTheme } from "@/hooks/useTheme";
 
+// `Tab` calls withTiming/withSpring directly instead of useMotion()'s toSpring/toTiming:
+// those are plain closures returned from a hook in another file, and Reanimated's worklet
+// autoworketization doesn't extend across module boundaries, so they aren't callable from
+// inside useDerivedValue's worklet.
+
 /**
  * Ported from 21st.dev "Bottom Nav Bar" (@arunachalam/bottom-nav-bar): pill
  * container, tinted active pill, and a label that expands out of the icon on

@@ -5,11 +5,7 @@ import {
   type View,
   type ViewStyle,
 } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { PRESS_SCALE, TAP_MIN, motion } from "@/constants/theme";
 import { useMotion } from "@/hooks/useMotion";
@@ -45,7 +41,7 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   ref
 ) {
   const held = useSharedValue(0);
-  const { reduce } = useMotion();
+  const { reduce, toTiming } = useMotion();
 
   // The disabled dim lives here rather than in a plain style: this animated style
   // is applied last, so an opacity set earlier in the array would be overwritten.
@@ -64,11 +60,11 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
       disabled={disabled}
       hitSlop={hitSlop ?? 8}
       onPressIn={(e) => {
-        held.value = withTiming(1, { duration: reduce ? 0 : motion.press });
+        held.value = toTiming(1, motion.press);
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        held.value = withTiming(0, { duration: reduce ? 0 : motion.press * 1.6 });
+        held.value = toTiming(0, motion.press * 1.6);
         onPressOut?.(e);
       }}
       style={[

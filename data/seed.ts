@@ -224,31 +224,3 @@ export const NET_WORTH_HISTORY = [
   { label: "Jul", value: 252900 },
   { label: "Aug", value: 268400 },
 ];
-
-export type Insight = {
-  id: string;
-  tone: "good" | "warn" | "bad";
-  title: string;
-  body: string;
-};
-
-export const INSIGHTS: Insight[] = [
-  {
-    id: "i1",
-    tone: "bad",
-    title: "Fun is 18% over",
-    body: "Concert tickets and a movie night pushed you ₱729 past the envelope. Two weeks left.",
-  },
-  {
-    id: "i2",
-    tone: "warn",
-    title: "Coffee is your quiet leak",
-    body: "9 runs this month at ₱185. That is ₱19,980 a year — a third of your travel fund.",
-  },
-  {
-    id: "i3",
-    tone: "good",
-    title: "Transport is down 24%",
-    body: "You walked more and skipped 6 rides versus last month. Keep it and you save ₱8k a year.",
-  },
-];
