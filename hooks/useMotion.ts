@@ -31,7 +31,7 @@ export function useMotion() {
       reduce,
       timing,
       /** Spring falls back to a 0ms timing so the value still commits. */
-      toSpring: (to: number, config: WithSpringConfig = motion.spring) =>
+      toSpring: (to: number, config: WithSpringConfig = motion.springSoft) =>
         reduce ? withTiming(to, { duration: 0 }) : withSpring(to, config),
       toTiming: (to: number, duration = motion.standard, easing?: EasingFunction) =>
         withTiming(to, timing(duration, easing)),
@@ -43,10 +43,7 @@ export function useMotion() {
       enterList: (index: number) =>
         reduce
           ? undefined
-          : FadeInDown.delay(Math.min(index, 12) * motion.stagger)
-              .duration(motion.standard)
-              .springify()
-              .damping(16),
+          : FadeInDown.delay(Math.min(index, 12) * motion.stagger).duration(motion.standard),
       enter: (delay = 0) =>
         reduce ? undefined : FadeIn.delay(delay).duration(motion.standard),
       durations: motion,
