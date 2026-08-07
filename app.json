@@ -40,7 +40,8 @@
           "backgroundColor": "#08080F",
           "imageWidth": 180
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true
