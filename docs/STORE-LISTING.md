@@ -20,7 +20,8 @@ watch 12 months react instantly. Envelopes, streaks, and XP keep you coming back
 
 ## Full description (Play Store 4000 char max / App Store no hard limit)
 
-Life Budget Simulator turns budgeting into a game you actually want to open.
+Life Budget Simulator is a budget and expense tracker that turns budgeting into a game you
+actually want to open.
 
 Every expense you track earns XP and builds a streak. Budgets are envelopes, not spreadsheets:
 see exactly how much room is left in Food, Transport, or Fun before you overspend, with a
@@ -45,7 +46,19 @@ No ads. No selling your data. Every number you see is your real spending, not a 
 
 ## Keywords (App Store, 100 char max, comma-separated, no spaces after commas)
 
-budget,expense tracker,net worth,savings,simulator,finance,money,envelope budgeting,goals,xp
+expense tracker,net worth,savings,finance,money,envelope budgeting,goals,xp,spending,wallet
+
+Apple's search index already credits words in the App Name ("Life," "Budget," "Simulator") and
+Subtitle ("Budget," "tracking," "gamified") — repeating them here wastes characters, so this
+list only carries terms not already covered above.
+
+## Play Store title (separate field from the App Store name, up to 50 char)
+
+Life Budget Simulator - Budget & Expense Tracker
+
+Play's ranking weighs the title field directly, and Play (unlike Apple) doesn't penalize a
+keyword-bearing title, so it's worth using the extra characters there. Keep the bare app name
+for App Store, where a keyword-stuffed name risks review rejection.
 
 ## Category
 
