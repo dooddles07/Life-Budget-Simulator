@@ -11,10 +11,10 @@
     "backgroundColor": "#08080F",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "dev.dooddles.lifebudgetsimulator"
+      "bundleIdentifier": "dev.brix.lifebudgetsimulator"
     },
     "android": {
-      "package": "dev.dooddles.lifebudgetsimulator",
+      "package": "dev.brix.lifebudgetsimulator",
       "adaptiveIcon": {
         "backgroundColor": "#08080F",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -45,6 +45,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ac7911d4-be9c-456e-8154-a9da5b63e2f8"
+      }
     }
   }
 }
