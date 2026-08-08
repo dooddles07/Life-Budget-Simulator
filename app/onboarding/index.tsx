@@ -14,8 +14,10 @@ import { Text } from "@/components/ui/Text";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { GOALS, PERSONAS } from "@/data/seed";
 import { formatMoney } from "@/lib/format";
+import { reportError } from "@/lib/crash-reporter";
 import { useAuth } from "@/lib/auth-context";
 import { seedDefaultBudgets } from "@/lib/data/budgets";
+import { recordGoalCreated } from "@/lib/data/gamification";
 import { addGoal } from "@/lib/data/goals";
 import { upsertProfile } from "@/lib/data/profiles";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -66,6 +68,14 @@ export default function OnboardingScreen() {
           icon: GOAL_ICON_KEY[selectedGoal.id] ?? "target",
           accent_index: selectedGoal.accentIndex,
         });
+        try {
+          await recordGoalCreated();
+        } catch (achievementError) {
+          reportError(
+            achievementError instanceof Error ? achievementError : new Error(String(achievementError)),
+            { where: "recordGoalCreated" },
+          );
+        }
       }
       await refetchProfile();
       haptics.success();

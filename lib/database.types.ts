@@ -166,6 +166,10 @@ export type Database = {
         Returns: undefined;
       };
       record_simulator_run: {
+        Args: { p_coffee_cut?: number | null };
+        Returns: undefined;
+      };
+      record_goal_created: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
       };

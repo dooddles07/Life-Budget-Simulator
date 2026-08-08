@@ -63,7 +63,7 @@ export default function SimulatorScreen() {
     // Fire-and-forget: closing must never block on the network. Progress
     // just won't tick this time if it fails -- no user-visible consequence.
     if (touched) {
-      recordSimulatorRun().catch((e) =>
+      recordSimulatorRun(scenario.coffeeCut).catch((e) =>
         reportError(e instanceof Error ? e : new Error(String(e)), {
           where: "recordSimulatorRun",
         })

@@ -11,7 +11,9 @@ import { Text } from "@/components/ui/Text";
 import { TextField } from "@/components/ui/TextField";
 import { radius, space } from "@/constants/theme";
 import { GOALS } from "@/data/seed";
+import { reportError } from "@/lib/crash-reporter";
 import { useAuth } from "@/lib/auth-context";
+import { recordGoalCreated } from "@/lib/data/gamification";
 import { addGoal } from "@/lib/data/goals";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useMotion } from "@/hooks/useMotion";
@@ -72,6 +74,14 @@ export default function NewGoalScreen() {
         });
       }
       haptics.success();
+      try {
+        await recordGoalCreated();
+      } catch (achievementError) {
+        reportError(
+          achievementError instanceof Error ? achievementError : new Error(String(achievementError)),
+          { where: "recordGoalCreated" },
+        );
+      }
       router.back();
     } catch (e) {
       haptics.error();
