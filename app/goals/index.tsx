@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { CalendarClock, ChevronLeft, Plus } from "@/lib/lucide-icons";
-import { createElement } from "react";
+import { createElement, useState } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -10,10 +10,12 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
+import { TextField } from "@/components/ui/TextField";
 import { ErrorState, LoadingState } from "@/components/ui/AsyncState";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { useGoals } from "@/hooks/useGoals";
-import type { Goal } from "@/lib/data/goals";
+import { useHaptics } from "@/hooks/useHaptics";
+import { contributeToGoal, type Goal } from "@/lib/data/goals";
 import { iconForKey } from "@/lib/icons";
 import { formatMoney } from "@/lib/format";
 import { useMotion } from "@/hooks/useMotion";
@@ -59,7 +61,7 @@ export default function GoalsScreen() {
         <View style={{ gap: space.md }}>
           {goals.map((goal, i) => (
             <Animated.View key={goal.id} entering={enterList(i)}>
-              <GoalCard goal={goal} delay={i * 60} />
+              <GoalCard goal={goal} delay={i * 60} onContributed={refetch} />
             </Animated.View>
           ))}
         </View>
@@ -79,9 +81,23 @@ export default function GoalsScreen() {
   );
 }
 
-function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
+function GoalCard({
+  goal,
+  delay,
+  onContributed,
+}: {
+  goal: Goal;
+  delay: number;
+  onContributed: () => void;
+}) {
   const theme = useTheme();
   const currency = useCurrency();
+  const haptics = useHaptics();
+
+  const [adding, setAdding] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const Icon = iconForKey(goal.icon);
   const accent = theme.categories[goal.accent_index];
@@ -95,6 +111,26 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
     eta.setMonth(eta.getMonth() + monthsLeft);
     etaLabel = eta.toLocaleDateString("en-US", { month: "short", year: "numeric" });
   }
+
+  const contributeAmount = Number(amount) || 0;
+
+  const confirmAdd = async () => {
+    if (contributeAmount <= 0 || saving) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await contributeToGoal(goal.id, contributeAmount);
+      haptics.success();
+      setAdding(false);
+      setAmount("");
+      onContributed();
+    } catch (e) {
+      haptics.error();
+      setError(e instanceof Error ? e.message : "Couldn't add funds -- try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Card padded="lg">
@@ -144,6 +180,53 @@ function GoalCard({ goal, delay }: { goal: Goal; delay: number }) {
           </Text>
         </View>
       </View>
+
+      {adding ? (
+        <View style={{ marginTop: space.lg, gap: space.sm }}>
+          <TextField
+            label="Amount to add"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+            placeholder="0"
+            maxLength={10}
+          />
+          {error ? (
+            <Text variant="label" tone="danger">
+              {error}
+            </Text>
+          ) : null}
+          <View style={{ flexDirection: "row", gap: space.sm }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                label="Cancel"
+                variant="surface"
+                full
+                disabled={saving}
+                onPress={() => {
+                  setAdding(false);
+                  setAmount("");
+                  setError(null);
+                }}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                label="Add"
+                variant="primary"
+                full
+                loading={saving}
+                disabled={contributeAmount <= 0}
+                onPress={() => void confirmAdd()}
+              />
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View style={{ marginTop: space.md }}>
+          <Button label="Add funds" variant="surface" icon={Plus} full onPress={() => setAdding(true)} />
+        </View>
+      )}
     </Card>
   );
 }

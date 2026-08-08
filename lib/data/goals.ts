@@ -15,3 +15,13 @@ export async function addGoal(input: GoalInput): Promise<Goal> {
   if (error) throw error;
   return data;
 }
+
+// Routed through an RPC (not a direct `saved` update) so the write is
+// server-validated and Goal Getter can be evaluated atomically alongside it.
+export async function contributeToGoal(goalId: string, amount: number): Promise<void> {
+  const { error } = await supabase.rpc("contribute_to_goal", {
+    p_goal_id: goalId,
+    p_amount: amount,
+  });
+  if (error) throw error;
+}

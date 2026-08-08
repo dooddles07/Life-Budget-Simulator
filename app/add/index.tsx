@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { ArrowDownLeft, ArrowUpRight, Check, Delete, X } from "@/lib/lucide-icons";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
@@ -11,7 +11,9 @@ import { Text } from "@/components/ui/Text";
 import { CURRENCIES } from "@/constants/config";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { CATEGORIES, type CategoryId } from "@/data/seed";
+import { reportError } from "@/lib/crash-reporter";
 import { useAuth } from "@/lib/auth-context";
+import { awardTransactionXp } from "@/lib/data/gamification";
 import { addTransaction } from "@/lib/data/transactions";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useMotion } from "@/hooks/useMotion";
@@ -33,6 +35,11 @@ export default function AddScreen() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
 
   const numeric = Number(amount) || 0;
   const canSave = numeric > 0;
@@ -69,7 +76,17 @@ export default function AddScreen() {
       });
       haptics.success();
       setSaved(true);
-      setTimeout(() => router.back(), 850);
+      try {
+        // The transaction is already saved; a failure here just means XP/streak
+        // self-heal on the next successful log (award_transaction_xp recomputes
+        // streak from real transaction dates rather than incrementing).
+        await awardTransactionXp();
+      } catch (xpError) {
+        reportError(xpError instanceof Error ? xpError : new Error(String(xpError)), {
+          where: "awardTransactionXp",
+        });
+      }
+      closeTimer.current = setTimeout(() => router.back(), 850);
     } catch (e) {
       haptics.error();
       setError(e instanceof Error ? e.message : "Couldn't save -- try again.");

@@ -22,6 +22,8 @@ import { Slider } from "@/components/ui/Slider";
 import { Text } from "@/components/ui/Text";
 import { ICON_STROKE, iconSize, radius, space } from "@/constants/theme";
 import { PROFILE } from "@/data/seed";
+import { reportError } from "@/lib/crash-reporter";
+import { recordSimulatorRun } from "@/lib/data/gamification";
 import { formatMoney } from "@/lib/format";
 import {
   BASELINE,
@@ -57,6 +59,19 @@ export default function SimulatorScreen() {
   const chartWidth = Math.min(width, 460) - space.lg * 2 - space.lg * 2;
   const better = result.delta >= 0;
 
+  const close = () => {
+    // Fire-and-forget: closing must never block on the network. Progress
+    // just won't tick this time if it fails -- no user-visible consequence.
+    if (touched) {
+      recordSimulatorRun().catch((e) =>
+        reportError(e instanceof Error ? e : new Error(String(e)), {
+          where: "recordSimulatorRun",
+        })
+      );
+    }
+    router.back();
+  };
+
   return (
     <Screen>
       <Animated.View
@@ -74,7 +89,7 @@ export default function SimulatorScreen() {
             Change a habit. Watch 12 months react.
           </Text>
         </View>
-        <IconButton icon={X} label="Close simulator" filled onPress={() => router.back()} />
+        <IconButton icon={X} label="Close simulator" filled onPress={close} />
       </Animated.View>
 
       {/* Verdict + projection */}

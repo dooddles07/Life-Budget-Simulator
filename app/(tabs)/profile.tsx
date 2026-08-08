@@ -61,6 +61,7 @@ export default function ProfileScreen() {
   const { profile, signOut, deleteAccount, refetchProfile } = useAuth();
   const [deleting, setDeleting] = useState(false);
   const [nameInput, setNameInput] = useState(profile?.name ?? "");
+  const [nameError, setNameError] = useState<string | null>(null);
   // Adjust local state during render when the loaded profile's name changes
   // (e.g. after saving) -- React's sanctioned alternative to a sync effect.
   const [syncedName, setSyncedName] = useState(profile?.name);
@@ -73,12 +74,14 @@ export default function ProfileScreen() {
     if (!profile) return;
     const trimmed = nameInput.trim();
     if (trimmed === profile.name) return;
+    setNameError(null);
     try {
       await upsertProfile({ id: profile.id, name: trimmed });
       await refetchProfile();
     } catch (err) {
       reportError(err instanceof Error ? err : new Error(String(err)), { where: "saveName" });
       setNameInput(profile.name);
+      setNameError("Couldn't save your name -- try again.");
     }
   };
 
@@ -162,7 +165,10 @@ export default function ProfileScreen() {
             <View style={{ flex: 1, gap: 2 }}>
               <TextInput
                 value={nameInput}
-                onChangeText={setNameInput}
+                onChangeText={(v) => {
+                  setNameInput(v);
+                  if (nameError) setNameError(null);
+                }}
                 onBlur={() => void saveName()}
                 placeholder="Add your name"
                 placeholderTextColor={theme.fgFaint}
@@ -172,15 +178,21 @@ export default function ProfileScreen() {
                     color: theme.fg,
                     padding: 0,
                     borderBottomWidth: 1,
-                    borderBottomColor: theme.border,
+                    borderBottomColor: nameError ? theme.danger : theme.border,
                     paddingBottom: 2,
                   },
                 ]}
-                accessibilityLabel="Your name"
+                accessibilityLabel={nameError ? `Your name, error: ${nameError}` : "Your name"}
               />
-              <Text variant="caption" tone="muted">
-                {profile.handle}
-              </Text>
+              {nameError ? (
+                <Text variant="caption" tone="danger">
+                  {nameError}
+                </Text>
+              ) : (
+                <Text variant="caption" tone="muted">
+                  {profile.handle}
+                </Text>
+              )}
               <Text variant="captionSb" tone="accent" style={{ marginTop: space.xs }}>
                 Lv {level.level} · {level.title}
               </Text>

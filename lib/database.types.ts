@@ -161,6 +161,18 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
       };
+      award_transaction_xp: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      record_simulator_run: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      contribute_to_goal: {
+        Args: { p_goal_id: string; p_amount: number };
+        Returns: undefined;
+      };
     };
     Enums: {
       category_id: CategoryId;
