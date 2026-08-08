@@ -43,6 +43,10 @@ function monthLabel(offset: number) {
   return d.toLocaleDateString("en-US", { month: "short" });
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
 export function project(scenario: Scenario): Projection {
   const subsAll = PROFILE.subscriptions;
   const keptSubs = subsAll
@@ -50,8 +54,12 @@ export function project(scenario: Scenario): Projection {
     .reduce((s, sub) => s + sub.cost, 0);
   const allSubs = subsAll.reduce((s, sub) => s + sub.cost, 0);
 
-  const coffeeSaved = PROFILE.coffeePerMonth * (scenario.coffeeCut / 100);
-  const rentChange = RENT * (scenario.rentDelta / 100);
+  const coffeeCut = clamp(scenario.coffeeCut, 0, 100);
+  const rentDelta = clamp(scenario.rentDelta, -20, 30);
+  const savingsRate = clamp(scenario.savingsRate, 0, 100);
+
+  const coffeeSaved = PROFILE.coffeePerMonth * (coffeeCut / 100);
+  const rentChange = RENT * (rentDelta / 100);
   const subsSaved = allSubs - keptSubs;
 
   const income = PROFILE.monthlyIncome + scenario.sideHustle;
@@ -59,7 +67,7 @@ export function project(scenario: Scenario): Projection {
     PROFILE.monthlyFixed + PROFILE.monthlyVariable + rentChange - coffeeSaved - subsSaved;
 
   const surplus = income - outgoing;
-  const invested = surplus * (scenario.savingsRate / 100);
+  const invested = surplus * (savingsRate / 100);
 
   const start = NET_WORTH_HISTORY[NET_WORTH_HISTORY.length - 1].value;
   const points: { label: string; value: number }[] = [

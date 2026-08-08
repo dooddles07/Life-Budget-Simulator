@@ -27,8 +27,11 @@ export function useInsightsData(): AsyncState<InsightsData> {
 
   const raw = useAsync(async () => {
     if (!session) return null;
+    // Net worth history needs every transaction ever (running total from
+    // starting_net_worth) -- same reasoning as useHomeData's netWorth calc.
+    // Everything else here windows down from this same full fetch.
     const [transactions, budgets] = await Promise.all([
-      listTransactions(session.user.id, { sinceISO: monthsAgoISO(6) }),
+      listTransactions(session.user.id),
       listBudgets(session.user.id),
     ]);
     // Captured at fetch time, not render time -- the weekly window should
@@ -40,6 +43,10 @@ export function useInsightsData(): AsyncState<InsightsData> {
     if (!raw.data) return null;
     const { transactions, budgets, weekStart } = raw.data;
     const monthStart = new Date(startOfMonthISO()).getTime();
+    const sixMonthsAgo = new Date(monthsAgoISO(6)).getTime();
+    const recentTransactions = transactions.filter(
+      (t) => new Date(t.occurred_at).getTime() >= sixMonthsAgo,
+    );
 
     return {
       budgetsSpend: budgetsWithSpend(
@@ -50,7 +57,7 @@ export function useInsightsData(): AsyncState<InsightsData> {
         transactions.filter((t) => new Date(t.occurred_at).getTime() >= weekStart),
       ),
       netWorthHistory: computeNetWorthHistory(transactions, profile?.starting_net_worth ?? 0, 6),
-      transactions,
+      transactions: recentTransactions,
     };
   }, [raw.data, profile?.starting_net_worth]);
 

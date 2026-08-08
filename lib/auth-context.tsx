@@ -37,17 +37,34 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let cancelled = false;
 
-    supabase.auth.getSession().then(async ({ data }) => {
-      if (cancelled) return;
-      setSession(data.session);
-      if (data.session) setProfile(await getProfile(data.session.user.id));
-      setIsLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(async ({ data }) => {
+        if (cancelled) return;
+        setSession(data.session);
+        setProfile(data.session ? await getProfile(data.session.user.id) : null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setSession(null);
+        setProfile(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
     const { data: sub } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (cancelled) return;
       setSession(newSession);
-      setProfile(newSession ? await getProfile(newSession.user.id) : null);
+      setProfile(null);
+      if (newSession) {
+        try {
+          const nextProfile = await getProfile(newSession.user.id);
+          if (!cancelled) setProfile(nextProfile);
+        } catch {
+          if (!cancelled) setProfile(null);
+        }
+      }
     });
 
     return () => {

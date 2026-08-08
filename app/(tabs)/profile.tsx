@@ -74,6 +74,11 @@ export default function ProfileScreen() {
     if (!profile) return;
     const trimmed = nameInput.trim();
     if (trimmed === profile.name) return;
+    if (!trimmed) {
+      setNameInput(profile.name);
+      setNameError("Name can't be empty.");
+      return;
+    }
     setNameError(null);
     try {
       await upsertProfile({ id: profile.id, name: trimmed });

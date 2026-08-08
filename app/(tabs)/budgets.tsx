@@ -33,11 +33,13 @@ export default function BudgetsScreen() {
 
   const { totalLimit, totalSpent, overCount, sorted } = useMemo(() => {
     const list = budgets ?? [];
+    const ratio = (b: (typeof list)[number]) =>
+      b.monthly_limit > 0 ? b.spent / b.monthly_limit : 0;
     return {
       totalLimit: list.reduce((s, b) => s + b.monthly_limit, 0),
       totalSpent: list.reduce((s, b) => s + b.spent, 0),
       overCount: list.filter((b) => b.spent > b.monthly_limit).length,
-      sorted: [...list].sort((a, b) => b.spent / b.monthly_limit - a.spent / a.monthly_limit),
+      sorted: [...list].sort((a, b) => ratio(b) - ratio(a)),
     };
   }, [budgets]);
 
